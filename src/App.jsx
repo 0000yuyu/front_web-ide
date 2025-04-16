@@ -4,6 +4,7 @@ import TeamTestPage from './pages/TeamTestPage';
 import QuestTestPage from './pages/QuestTestPage';
 import CodeTestPage from './pages/CodeTestPage';
 import UserTestPage from './pages/UserTestPage';
+import QuestPage from './pages/QuestPage';
 
 export default function App() {
   return (
@@ -20,6 +21,11 @@ export default function App() {
         <Route path='code' element={<CodeTestPage />} />
         <Route path='user' element={<UserTestPage />} />
       </Route>
+
+      {/* 지윤 */}
+      <Route path='quest2' element={<QuestPageLayout />}>
+        <Route index element={<QuestPage />} />
+      </Route>
     </Routes>
   );
 }
@@ -27,9 +33,19 @@ function AppLayout() {
   return (
     <div>
       {/* 여기 위에 링크 하나씩 추가하고 테스트 하면 됩니다! */}
+      <ui className='list-disc pl-5'>
+      <li>  
       <Link to={'test'}>api 테스트 하러가기</Link>
+      </li>
+      {/*지윤*/}
+      <li>  
+      <Link to={'quest2'}>questPage TestPage 이동</Link>
+      </li>
+      <li>
       <Outlet></Outlet>
-    </div>
+      </li>
+      </ui>
+    </div>  
   );
 }
 function TestPageLayout() {
@@ -55,5 +71,14 @@ function TestPageLayout() {
       </ul>
       <Outlet />
     </div>
+  );
+}
+//지윤 
+function QuestPageLayout() {
+  return (
+    <div>
+      <Link to={'../'}>메인으로 이동</Link>
+      <Outlet />
+    </div>  
   );
 }

@@ -76,7 +76,7 @@ export default function QuestTestPage() {
   };
 
   const Section = ({ title, id, children }) => (
-    <div className='mb-6 p-4 border border-transparent3 rounded-lg bg-transparent2'>
+    <div className='mb-6 p-4 border border-gray1 rounded-lg bg-white'>
       <div className='flex items-center justify-between mb-2'>
         <h3 className='text-base1 font-semibold'>{title}</h3>
         <button onClick={() => clearResult(id)} className='text-error text-sm'>
@@ -108,7 +108,7 @@ export default function QuestTestPage() {
       type={type}
     />
   );
-
+//////////////////////////////////////////view
   return (
     <div className='p-6 font-mono'>
       <h2 className='text-xl font-bold text-base1 mb-4'>
