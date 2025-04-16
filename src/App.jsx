@@ -1,5 +1,5 @@
 import { Routes, Route, Link, Outlet } from 'react-router-dom';
-import AuthTestPage from './pages/authTestPage';
+import AuthTestPage from './pages/AuthTestPage';
 import TeamTestPage from './pages/TeamTestPage';
 import QuestTestPage from './pages/QuestTestPage';
 import CodeTestPage from './pages/CodeTestPage';
