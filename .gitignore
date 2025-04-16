@@ -22,14 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-<<<<<<< HEAD
 .env
 .env.development
 .env.local
 
 
 *storybook.log
-=======
-
-*storybook.log
->>>>>>> eafa483 (git init)

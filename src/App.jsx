@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { Routes, Route, Link, Outlet } from 'react-router-dom';
 import AuthTestPage from './pages/AuthTestPage';
 import TeamTestPage from './pages/TeamTestPage';
@@ -58,17 +57,3 @@ function TestPageLayout() {
     </div>
   );
 }
-=======
-import './App.css'
-
-function App() {
-
-  return (
-    <>
-    <div className='bg-error'>hello</div>
-    </>
-  )
-}
-
-export default App
->>>>>>> eafa483 (git init)
