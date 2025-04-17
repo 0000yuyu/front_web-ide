@@ -5,19 +5,20 @@ import App from './App.jsx';
 import { BrowserRouter } from 'react-router-dom';
 
 // 개발 환경일 때만 mock 서버 실행
-if (import.meta.env.VITE_MODE === 'development') {
-  (async () => {
+async function enableMocking() {
+  if (import.meta.env.VITE_MODE === 'development') {
     const { worker } = await import('./mocks/browser');
     const { initMockSocket } = await import('./mocks/wsServer');
     await worker.start();
     initMockSocket();
-  })();
+  }
 }
-
-createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </React.StrictMode>
-);
+enableMocking().then(() => {
+  createRoot(document.getElementById('root')).render(
+    <React.StrictMode>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </React.StrictMode>
+  );
+});
