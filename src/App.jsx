@@ -5,6 +5,7 @@ import QuestTestPage from './pages/QuestTestPage';
 import CodeTestPage from './pages/CodeTestPage';
 import UserTestPage from './pages/UserTestPage';
 import QuestPage from './pages/QuestPage';
+import TeamPage from './pages/TeamPage';
 
 export default function App() {
   return (
@@ -26,6 +27,10 @@ export default function App() {
       <Route path='quest2' element={<QuestPageLayout />}>
         <Route index element={<QuestPage />} />
       </Route>
+      
+      <Route path='team2' element={<TeamPageLayout />}>
+        <Route index element={<TeamPage />} />
+      </Route>
     </Routes>
   );
 }
@@ -40,6 +45,9 @@ function AppLayout() {
       {/*지윤*/}
       <li>  
       <Link to={'quest2'}>questPage TestPage 이동</Link>
+      </li>
+      <li>  
+      <Link to={'team2'}>TeamPage TestPage 이동</Link>
       </li>
       <li>
       <Outlet></Outlet>
@@ -75,6 +83,14 @@ function TestPageLayout() {
 }
 //지윤 
 function QuestPageLayout() {
+  return (
+    <div>
+      <Link to={'../'}>메인으로 이동</Link>
+      <Outlet />
+    </div>  
+  );
+}
+function TeamPageLayout() {
   return (
     <div>
       <Link to={'../'}>메인으로 이동</Link>
