@@ -1,6 +1,20 @@
-import { useState } from 'react';
+import React, { useState } from "react";
+import QuestTestPage from './QuestTestPage';
 
-export default function QuestTestPage() {
+
+export default function Page() {
+  
+  const DivSection = ({ children }) => (
+      <div>
+        {React.Children.map(children, (child, i) => (
+            <div key={i} className="mb-2 p-2 rounded-lg border border-gray-500">
+            {child}
+          </div>
+        ))}
+      </div>
+    )
+  /////
+
   const [form, setForm] = useState({
     teamId: 1,
     questId: 1,
@@ -21,7 +35,7 @@ export default function QuestTestPage() {
   const updateResult = (key, value) => {
     setResults((prev) => ({ ...prev, [key]: value }));
   };
-
+  
   const clearResult = (key) => {
     setResults((prev) => {
       const copy = { ...prev };
@@ -108,30 +122,44 @@ export default function QuestTestPage() {
       type={type}
     />
   );
-//////////////////////////////////////////view
+
+
+
+
+
+  //응시생
+      const [formStates, setFormStates] = useState([
+        { id: 1, name: '이지윤', isPaused: false },
+        { id: 2, name: '송유진', isPaused: false },
+        { id: 3, name: '김구름', isPaused: false }
+      ])
+  // 체크박스 상태 변경 핸들러
+      const handleToggle = (id, checked) => {
+        setFormStates((prev) =>
+          prev.map((form) =>
+            form.id === id ? { ...form, isPaused: checked } : form
+          )
+        )
+      }
+  // 합산
+      const totalScore = formStates.filter((form) => form.isPaused).length
+    
+
+
   return (
-    <div className='p-6 font-mono'>
-      <h2 className='text-xl font-bold text-base1 mb-4'>
-        🧩 퀘스트 관련 API 테스트
-      </h2>
-
-      <Section title='문제 생성 테스트' id='createQuest'>
-        <Input name='teamId' placeholder='팀 ID' type='number' />
-        <Input name='questName' placeholder='문제 이름' />
-        <Input name='questStart' placeholder='시작일 (YYYY-MM-DD)' />
-        <Input name='questDue' placeholder='마감일 (YYYY-MM-DD)' />
-        <Input name='questLink' placeholder='문제 링크' />
-        <button
-          onClick={() => runTest('createQuest')}
-          className='bg-base1 text-white px-4 py-1 rounded'
-        >
-          문제 생성
-        </button>
-      </Section>
-
-      <Section title='문제 상세 조회' id='questDetail'>
+    <div className="p-2">
+      <DivSection>
+        <div>Header</div>
+        <div>
+        <>백준 1001번</>
+          <a>문제 상세</a>
+          <Section title='문제 상세 조회' id='questDetail'>
         <Input name='teamId' placeholder='팀 ID' type='number' />
         <Input name='questId' placeholder='문제 ID' type='number' />
+        <Input name='questName' placeholder='문제 이름'/>
+        <Input name='questStart' placeholder='시작일 (YYYY-MM-DD)'/>
+        <Input name='questDue' placeholder='마감일 (YYYY-MM-DD)'/>
+        <Input name='questLink' placeholder='문제 링크'/>
         <button
           onClick={() => runTest('questDetail')}
           className='bg-base1 text-white px-4 py-1 rounded'
@@ -139,19 +167,28 @@ export default function QuestTestPage() {
           문제 상세
         </button>
       </Section>
-
-      <Section title='문제 상태 변경' id='updateStatus'>
-        <Input name='teamId' placeholder='팀 ID' type='number' />
-        <Input name='questId' placeholder='문제 ID' type='number' />
-        <Input name='userId' placeholder='사용자 ID' />
-        <Input name='questStatus' placeholder='상태(COMPLETED 등)' />
-        <button
-          onClick={() => runTest('updateStatus')}
-          className='bg-base1 text-white px-4 py-1 rounded'
-        >
-          상태 변경
-        </button>
-      </Section>
-    </div>
+        </div>
+        <div>
+            <>제출인원: {totalScore} / {formStates.length}</>
+            <>
+            {formStates.map((form) => (
+  <label key={form.id} style={{display:"block"}}>
+    <input
+      style={{ display: "inline", margin: "8px"}}
+      type="checkbox"
+      checked={form.isPaused}
+      onChange={(e) => handleToggle(form.id, e.target.checked)}
+    />
+    {form.isPaused ? `${form.name}` : `${form.name}`}
+  </label>
+))}
+        </>
+        </div>
+        <div>
+          footer
+        </div>
+      </DivSection>
+      </div>
   );
-}
+};
+
