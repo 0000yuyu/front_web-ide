@@ -1,17 +1,17 @@
 import { http, HttpResponse } from 'msw';
 import { users } from '../data/users';
 
-export const userHandlers = [
-  http.get('/user/:userId', ({ params }) => {
-    const { userId } = params;
-    const user = users.find((u) => u.userId === userId);
+const userId = localStorage.getItem('id');
 
+export const userHandlers = [
+  http.get('/user', () => {
+    if (!userId) return HttpResponse.json({ status: 401 });
+    const user = users.find((u) => u.userId === userId);
     if (user) {
       return HttpResponse.json({
         nickname: user.nickname,
         email: user.email,
-        tier: 'Silver', // 임시 값
-        teamId: 1, // 임시 값
+        tier: user.tier,
       });
     } else {
       return HttpResponse.json(

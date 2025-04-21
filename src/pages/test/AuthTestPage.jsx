@@ -39,6 +39,7 @@ export default function AuthTestPage() {
         updateResult('register', { status: res.status, ...data });
       }
       if (type === 'login') {
+        console.log(form.hashedPassword);
         const res = await fetch('/auth/login', {
           method: 'POST',
           headers,

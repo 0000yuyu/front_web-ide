@@ -16,4 +16,7 @@ export default defineConfig({
       '@component': path.resolve(__dirname, './src/component'),
     },
   },
+  optimizeDeps: {
+    include: ['zustand'],
+  },
 });

@@ -57,7 +57,7 @@ export default function TeamTestPage() {
         updateResult('joinTeam', { status: res.status, ...data });
       }
       if (type === 'teamList') {
-        const res = await fetch('/team/list');
+        const res = await fetch('/team/list/Silver');
         const data = await res.json();
         updateResult('teamList', { status: res.status, data });
       }

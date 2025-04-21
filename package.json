@@ -11,10 +11,12 @@
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
+    "bcryptjs": "^3.0.2",
     "clsx": "^2.1.1",
     "lucide-react": "^0.488.0",
     "mock-socket": "^9.3.1",
     "msw": "^2.7.4",
+    "path-browserify": "^1.0.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icon": "^1.0.0",

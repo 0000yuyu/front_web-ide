@@ -23,8 +23,9 @@ export const authHandlers = [
         { status: 401 }
       );
     }
+    localStorage.setItem('id', userId);
 
-    const token = btoa(`${userId}-token`);
+    const token = btoa(`${userId}-token`); // 임시 토큰 생성
     return HttpResponse.json(
       { token, message: '로그인 성공' },
       { status: 200 }
@@ -64,7 +65,7 @@ export const authHandlers = [
   http.post('/auth/find-password', async ({ request }) => {
     const { userId, email } = await request.json();
     const user = users.find((u) => u.email === email && u.userId === userId);
-    // 이메일로 임시 비밀번호 전송하는 로직은 구현하지 않음
+
     if (user)
       return HttpResponse.json(
         { message: '이메일로 임시 비밀번호 전송됨' },
@@ -79,6 +80,7 @@ export const authHandlers = [
 
   // 로그아웃
   http.post('/auth/logout', () => {
+    localStorage.removeItem('id');
     return HttpResponse.json({ success: true }, { status: 200 });
   }),
 ];

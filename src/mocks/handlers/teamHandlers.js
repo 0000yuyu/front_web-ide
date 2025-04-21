@@ -6,33 +6,45 @@ let teamIdCounter = 2; // 이미 teamId: 1 있음
 
 export const teamHandlers = [
   // 팀 리스트 조회
-  http.get('/team/list', () => {
-    const result = teams.map((team) => ({
+  http.get('/team/list/:tier', async ({ params }) => {
+    const { tier } = params;
+    console.log(tier);
+    console.log(teams);
+    const dataArray = teams.filter((team) => {
+      console.log(team.teamTier);
+      return team.teamTier === tier;
+    });
+    const result = dataArray.map((team) => ({
+      teamId: team.teamId,
       teamName: team.teamName,
       teamQuest: team.quests.length,
-      currnet_member_count: team.members.length,
+      current_member_count: team.members.length,
       maxMember: team.maxMember,
       dueDate: team.dueDate,
     }));
+    console.log(result);
     return HttpResponse.json(result);
   }),
   // 팀 생성
   http.post('/team', async ({ request }) => {
-    const { teamName, teamTier, member, dueDate, teamDescription } =
-      await request.json();
+    const data = await request.json();
+    const { teamName, teamTier, member, dueDate, teamDescription } = data;
+    console.log(teamName, teamTier, member, dueDate, teamDescription);
 
     const newTeam = {
       teamId: teamIdCounter++,
-      teamName,
-      teamTier,
-      teamDescription,
+      teamName: teamName,
+      teamTier: teamTier,
+      teamDescription: teamDescription,
       maxMember: member,
-      dueDate,
+      dueDate: dueDate,
       members: [],
       quests: [],
     };
+    console.log(newTeam);
 
     teams.push(newTeam);
+    console.log(teams);
     return HttpResponse.json({ success: true }, { status: 200 });
   }),
 

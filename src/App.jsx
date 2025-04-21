@@ -1,15 +1,37 @@
 import { Routes, Route, Link, Outlet } from 'react-router-dom';
-import AuthTestPage from './pages/AuthTestPage';
-import TeamTestPage from './pages/TeamTestPage';
-import QuestTestPage from './pages/QuestTestPage';
-import CodeTestPage from './pages/CodeTestPage';
-import UserTestPage from './pages/UserTestPage';
+import AuthTestPage from './pages/test/AuthTestPage';
+import TeamTestPage from './pages/test/TeamTestPage';
+import QuestTestPage from './pages/test/QuestTestPage';
+import CodeTestPage from './pages/test/CodeTestPage';
+import UserTestPage from './pages/test/UserTestPage';
+
+import IntroPage from './pages/IntroPage';
+import GroupPage from './pages/GroupPage';
+import QuestPage from './pages/QuestPage';
+import TeamPage from './pages/TeamPage';
+import Header from './components/Header';
+import { isLoggedIn } from './utils/auth';
+import LoginPage from './pages/LoginPage';
+import FindIdPage from './pages/FindIdPage';
+import FindPasswordPage from './pages/FindPasswordPage';
+import MembershipPage from './pages/MembershipPage';
 
 export default function App() {
   return (
     <Routes>
       <Route path='/' element={<AppLayout />}>
-        {/* 기본 페이지 구성한거 넣으시면 돼요! */}
+        <Route index element={<IndexPage />} />
+        <Route
+          path='intro'
+          element={isLoggedIn() ? <GroupPage /> : <IntroPage />}
+        />
+        <Route path='group' element={<GroupPage />} />
+        <Route path='quest' element={<QuestPage />} />
+        <Route path='team' element={<TeamPage />} />
+        <Route path='login' element={<LoginPage />} />
+        <Route path='membership' element={<MembershipPage />} />
+        <Route path='find-id' element={<FindIdPage />} />
+        <Route path='find-password' element={<FindPasswordPage />} />
       </Route>
 
       {/* api 테스트 확인하세요 */}
@@ -26,9 +48,19 @@ export default function App() {
 function AppLayout() {
   return (
     <div>
-      {/* 여기 위에 링크 하나씩 추가하고 테스트 하면 됩니다! */}
-      <Link to={'test'}>api 테스트 하러가기</Link>
+      <Header />
       <Outlet></Outlet>
+    </div>
+  );
+}
+function IndexPage() {
+  return (
+    <div className='flex flex-col p-2'>
+      <Link to={'intro'}>intro</Link>
+      <Link to={'group'}>group</Link>
+      <Link to={'quest'}>quest</Link>
+      <Link to={'team'}>team</Link>
+      <Link to={'test'}>api 테스트 하러가기</Link>
     </div>
   );
 }
