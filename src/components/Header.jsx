@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 
 export default function Header() {
   const isLogged = isLoggedIn();
-  const { userid, nickname, tier, email } = userDataStore();
+  const { userid, nickname, tier, email, resetUserProfile } = userDataStore();
 
   return (
     <div>
@@ -22,6 +22,7 @@ export default function Header() {
             <button
               onClick={() => {
                 logout();
+                resetUserProfile();
                 window.location.href = '/';
               }}
             >
