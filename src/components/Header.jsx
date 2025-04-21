@@ -22,7 +22,7 @@ export default function Header() {
             <button
               onClick={() => {
                 logout();
-                window.location.reload();
+                window.location.reload('/');
               }}
             >
               로그아웃
