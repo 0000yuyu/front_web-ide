@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  UseUserStore,
-  UseNotice,
-  useModalStore,
-  useProblemStore,
-} from './TeamStore';
+import { useModalStore, useProblemStore } from './TeamStore';
+import { Link, useParams } from 'react-router-dom';
+import { getTeam, getTeamMembers } from '@/utils/teamManage';
+import { getQuestList } from '@/utils/questManage';
 
-export default function TeamPage() {
-  const { teamId, profile, tiers } = UseUserStore();
-  const { notices } = UseNotice();
+export default function TeamMainPage() {
+  const { teamId } = useParams();
+  const [teamData, setTeamData] = useState({});
+  const [memberList, setMemberList] = useState([]);
+  const [questionList, setQuestionList] = useState([]);
   const { isOpen, toggle } = useModalStore();
   const { addProblem } = useProblemStore();
 
@@ -20,9 +20,34 @@ export default function TeamPage() {
     questStart: '2025-04-01',
     questDue: '2025-04-03',
     questLink: 'https://example.com',
-    userId: 'user123',
-    questStatus: 'COMPLETED',
   });
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        // 두 비동기 함수 동시에 실행
+        const [teamData, membersData, questionsData] = await Promise.all([
+          getTeam(teamId),
+          getTeamMembers(teamId),
+          getQuestList(teamId),
+        ]);
+
+        // 받은 데이터를 state에 저장
+        if (teamData) setTeamData(teamData);
+        if (membersData) setMemberList(membersData);
+        if (questionsData) setQuestionList(questionsData);
+
+        // 콘솔로 확인
+        console.log('team:', teamData);
+        console.log('members:', membersData);
+        console.log('quest:', questionList);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    }
+
+    fetchData();
+  }, [teamId]);
+
   const [results, setResults] = useState({});
 
   const handleChange = (e) => {
@@ -159,18 +184,20 @@ export default function TeamPage() {
     );
   }
 
-  function ProblemList() {
-    const { problems } = useProblemStore();
-
+  function ProblemList({ problems }) {
     return (
       <div className='grid grid-cols-2 gap-4 mt-4'>
         {problems.map((problem) => (
           <div key={problem.id} className='p-4 border rounded shadow-sm'>
             <div className='flex justify-between items-center'>
               <h2 className='font-semibold'>{problem.questName}</h2>
-              <span className='text-white text-sm px-2 py-1 rounded bg-[#2D336B]'>
-                {problem.status}
-              </span>
+              {problem.status}
+              <Link
+                to={`/quest/${teamId}/${problem.questId}`}
+                className='text-white text-sm px-2 py-1 rounded bg-[#2D336B]'
+              >
+                이동
+              </Link>
             </div>
             <p className='text-sm mt-2'>인원: {problem.teamSize}</p>
             <p className='text-sm'>마감일: {problem.questDue}</p>
@@ -237,40 +264,28 @@ export default function TeamPage() {
         <div className='flex-1 p-6 pt-0 min-h-screen justify-items-stretch'>
           {/* 팀 정보 */}
           <div className='flex items-center justify-between'>
-            <h2 className='text-lg font-semibold mb-2'>{teamId}</h2>
-            <p>{tiers}</p>
+            <h2 className='text-lg font-semibold mb-2'>{teamData.teamName}</h2>
+            <p>{'tiers'}</p>
           </div>
           <section className='divide-x-1 h-48 max-h-48 grid grid-cols-3 gap-0 mb-6'>
             <div className='col-span-2 bg-white shadow rounded-l-lg p-4'>
               {/* 공지사항 */}
               <div className='text-sm text-gray-600 whitespace-pre-line'>
-                {notices.map((n) => (
-                  <p key={n.id} className='mb-2'>
-                    {n.title}
-                  </p>
-                ))}
+                {teamData.teamDescription}
               </div>
             </div>
 
             <div className='overflow-y-scroll bg-white shadow rounded-r-lg p-4 '>
               <h3 className='font-semibold mb-2'>User list</h3>
               <ul className='text-sm text-gray-700 space-y-1'>
-                {[
-                  '정상모',
-                  '김지환',
-                  '송유진',
-                  '최은희',
-                  '이지윤',
-                  '김구룡',
-                ].map((user) => (
-                  <li key={user} className='flex items-center gap-2'>
+                {memberList.map((member, index) => (
+                  <li key={index} className='flex items-center gap-2'>
                     <img
-                      src={profile || '/default.png'}
                       alt='프로필'
                       className='w-10 h-10 rounded-full bg-gray-200'
                     />
-                    <span className='w-2 h-2 rounded-full' />
-                    {user}
+                    <span className='h-2 rounded-full' />
+                    {member.nickname}
                   </li>
                 ))}
               </ul>
@@ -289,7 +304,7 @@ export default function TeamPage() {
               </button>
             </div>
             {isOpen && <Modal />}
-            <ProblemList />
+            <ProblemList problems={questionList} />
           </div>
         </div>
         {/*채팅*/}

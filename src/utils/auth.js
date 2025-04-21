@@ -13,7 +13,7 @@ export const getHeaders = () => {
 };
 
 // 토큰 저장
-export const saveToken = (id, token) => {
+export const saveToken = (token) => {
   localStorage.setItem('token', token);
 };
 // 토큰 가져오기
@@ -24,6 +24,7 @@ export const getToken = () => {
 // 토큰 삭제 (로그아웃)
 export const removeToken = () => {
   localStorage.removeItem('token');
+  localStorage.removeItem('id');
 };
 
 // 로그인 여부 확인

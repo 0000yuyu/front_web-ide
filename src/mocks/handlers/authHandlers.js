@@ -12,10 +12,11 @@ export const authHandlers = [
 
   // 로그인
   http.post('/auth/login', async ({ request }) => {
-    const { userId, hashedPassword } = await request.json();
+    const { userId, password } = await request.json();
     const user = users.find(
-      (u) => u.userId === userId && u.hashedPassword === hashedPassword
+      (u) => u.userId === userId && u.password === password
     );
+    console.log(user);
 
     if (!user) {
       return HttpResponse.json(
@@ -34,7 +35,7 @@ export const authHandlers = [
 
   // 회원가입
   http.post('/auth/register', async ({ request }) => {
-    const { userId, hashedPassword, email, nickname } = await request.json();
+    const { userId, password, email, nickname } = await request.json();
 
     if (users.find((u) => u.userId === userId)) {
       return HttpResponse.json(
@@ -43,7 +44,7 @@ export const authHandlers = [
       );
     }
 
-    users.push({ userId, hashedPassword, email, nickname });
+    users.push({ userId, password, email, nickname });
     return HttpResponse.json({ message: '회원가입 성공' }, { status: 200 });
   }),
 

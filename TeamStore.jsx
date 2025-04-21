@@ -1,10 +1,10 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 
 //UserList
 export const UseUserStore = create((set) => ({
-  teamId: "Today I Learn",
-  profile: "", // 예: 이미지 URL
-  tiers: "bronze", // 예: bronze, silver, gold 등
+  teamId: 'Today I Learn',
+  profile: '', // 예: 이미지 URL
+  tiers: 'bronze', // 예: bronze, silver, gold 등
 
   // 상태 업데이트 함수들
   setTeamId: (id) => set({ teamId: id }),
@@ -13,9 +13,9 @@ export const UseUserStore = create((set) => ({
 
   resetUser: () =>
     set({
-      teamId: "Today I Learn",
-      profile: "",
-      tiers: "bronze",
+      teamId: 'Today I Learn',
+      profile: '',
+      tiers: 'bronze',
     }),
 }));
 
@@ -24,14 +24,14 @@ export const UseUserStore = create((set) => ({
 //teamId: 팀ID,
 export const UseNotice = create((set) => ({
   notices: [
-    { id: 0, title: "팀 프로젝트 시작 안내 (2025.04.20)" },
-    { id: 1, title: "스터디 회의는 금요일 19시에 진행됩니다." },
+    { id: 0, title: '팀 프로젝트 시작 안내 (2025.04.20)' },
+    { id: 1, title: '스터디 회의는 금요일 19시에 진행됩니다.' },
   ],
 
   // (선택) 추가용 함수: 추후 관리자 페이지에서 사용 가능
   addNotice: (title) =>
     set((state) => ({
-      notices: [...state.notices, { id: nextId++, title }],
+      notices: [...state.notices, { id: 1, title }],
     })),
 }));
 

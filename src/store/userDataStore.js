@@ -8,28 +8,32 @@ export const userDataStore = create(
       nickname: null,
       tier: null,
       email: null,
+      teamId: null,
 
       setUserId: (userId) => set({ userId }),
       setNickname: (nickname) => set({ nickname }),
       setTier: (tier) => set({ tier }),
       setEmail: (email) => set({ email }),
+      setTeamId: (teamId) => set({ teamId }),
 
-      setUserProfile: ({ nickname, tier, email }) =>
-        set({ nickname, tier, email }),
+      setUserProfile: ({ nickname, tier, email, teamId }) =>
+        set({ nickname, tier, email, teamId }),
 
       resetUserProfile: () =>
         set({
           nickname: null,
           tier: null,
           email: null,
+          teamId: null,
         }),
     }),
     {
-      name: 'user-data-storage', // localStorage에 저장될 키
+      name: 'user-data-storage',
       partialize: (state) => ({
         nickname: state.nickname,
         tier: state.tier,
         email: state.email,
+        teamId: state.teamId,
       }),
     }
   )

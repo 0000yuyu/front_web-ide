@@ -8,23 +8,28 @@ export const teamHandlers = [
   // 팀 리스트 조회
   http.get('/team/list/:tier', async ({ params }) => {
     const { tier } = params;
-    console.log(tier);
-    console.log(teams);
-    const dataArray = teams.filter((team) => {
-      console.log(team.teamTier);
-      return team.teamTier === tier;
+
+    // 1. 현재 로그인한 유저 id 가져오기
+    const userId = localStorage.getItem('id');
+
+    // 유저가 속한 등급만 볼 수 있음
+    const dataArray = teams.filter((team) => team.teamTier === tier);
+
+    const result = dataArray.map((team) => {
+      return {
+        teamId: team.teamId,
+        teamName: team.teamName,
+        teamQuest: team.quests.length,
+        current_member_count: team.members.length,
+        maxMember: team.maxMember,
+        dueDate: team.dueDate,
+        is_joined: team.members.includes(userId), // 여기서 가입 여부 판단
+      };
     });
-    const result = dataArray.map((team) => ({
-      teamId: team.teamId,
-      teamName: team.teamName,
-      teamQuest: team.quests.length,
-      current_member_count: team.members.length,
-      maxMember: team.maxMember,
-      dueDate: team.dueDate,
-    }));
-    console.log(result);
+
     return HttpResponse.json(result);
   }),
+
   // 팀 생성
   http.post('/team', async ({ request }) => {
     const data = await request.json();

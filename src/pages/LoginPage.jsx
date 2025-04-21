@@ -46,7 +46,7 @@ export default function LoginPage() {
         <label htmlFor='pwd'>비밀번호</label>
         <input
           id='pwd'
-          type='password'
+          type='text'
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           name='pwd'

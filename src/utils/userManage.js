@@ -1,24 +1,20 @@
-import { userDataStore } from '@/store/userDataStore';
 import { removeToken, saveToken } from './auth';
-import bcrypt from 'bcryptjs';
 
 const headers = { 'Content-Type': 'application/json' };
-const salt = '$2b$10$1234567890123456789012';
 
 export async function login(userId, password) {
-  const hashedPassword = bcrypt.hashSync(password, salt);
-  console.log(hashedPassword);
   try {
     const response = await fetch('/auth/login', {
       method: 'POST',
       headers,
       body: JSON.stringify({
         userId,
-        hashedPassword,
+        password,
       }),
     });
     if (response.ok) {
       const data = await response.json();
+      console.log(data);
       saveToken(data.token);
       return true;
     }
@@ -28,14 +24,12 @@ export async function login(userId, password) {
   }
 }
 export async function membership(userId, password, nickname, email) {
-  const hashedPassword = bcrypt.hashSync(password, salt);
   try {
     const response = await fetch('/auth/register', {
       method: 'POST',
       headers,
-      body: JSON.stringify({ userId, hashedPassword, nickname, email }),
+      body: JSON.stringify({ userId, password, nickname, email }),
     });
-    console.log(hashedPassword);
     if (response.ok) return true;
     else return false;
   } catch (error) {
@@ -76,6 +70,7 @@ export async function getUserData() {
   try {
     const res = await fetch(`/user`);
     const data = await res.json();
+    console.log(data);
     return data;
   } catch (error) {
     console.log(error);

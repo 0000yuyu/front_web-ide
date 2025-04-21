@@ -6,32 +6,43 @@ import CodeTestPage from './pages/test/CodeTestPage';
 import UserTestPage from './pages/test/UserTestPage';
 
 import IntroPage from './pages/IntroPage';
-import GroupPage from './pages/GroupPage';
 import QuestPage from './pages/QuestPage';
-import TeamPage from './pages/TeamPage';
 import Header from './components/Header';
 import { isLoggedIn } from './utils/auth';
 import LoginPage from './pages/LoginPage';
 import FindIdPage from './pages/FindIdPage';
 import FindPasswordPage from './pages/FindPasswordPage';
 import MembershipPage from './pages/MembershipPage';
+import TeamMainPage from './pages/teamMainPage';
+import { userDataStore } from './store/userDataStore';
+import TeamListPage from './pages/teamListPage';
+import CodeEditorPage from './pages/CodeEditorPage';
 
 export default function App() {
+  const { teamId } = userDataStore();
+  console.log(isLoggedIn());
   return (
     <Routes>
       <Route path='/' element={<AppLayout />}>
         <Route index element={<IndexPage />} />
         <Route
           path='intro'
-          element={isLoggedIn() ? <GroupPage /> : <IntroPage />}
+          element={
+            isLoggedIn() ? (
+              <TeamMainPage link={`team/${teamId}`} />
+            ) : (
+              <IntroPage />
+            )
+          }
         />
-        <Route path='group' element={<GroupPage />} />
-        <Route path='quest' element={<QuestPage />} />
-        <Route path='team' element={<TeamPage />} />
+        <Route path='groups' element={<TeamListPage />} />
+        <Route path='quest/:teamId/:questId' element={<QuestPage />} />
+        <Route path='team/:teamId' element={<TeamMainPage />} />
         <Route path='login' element={<LoginPage />} />
         <Route path='membership' element={<MembershipPage />} />
         <Route path='find-id' element={<FindIdPage />} />
         <Route path='find-password' element={<FindPasswordPage />} />
+        <Route path='code/:questid/:userid' element={<CodeEditorPage />} />
       </Route>
 
       {/* api 테스트 확인하세요 */}
@@ -57,9 +68,7 @@ function IndexPage() {
   return (
     <div className='flex flex-col p-2'>
       <Link to={'intro'}>intro</Link>
-      <Link to={'group'}>group</Link>
-      <Link to={'quest'}>quest</Link>
-      <Link to={'team'}>team</Link>
+      <Link to={'groups'}>group</Link>
       <Link to={'test'}>api 테스트 하러가기</Link>
     </div>
   );

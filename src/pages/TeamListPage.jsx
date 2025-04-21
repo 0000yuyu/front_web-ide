@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useModalStore } from './TeamStore';
-import { createGroup, getGroupList } from '@/utils/groupManage';
 import { userDataStore } from '@/store/userDataStore';
+import { Link } from 'react-router-dom';
+import { createTeam, getTeamList } from '@/utils/teamManage';
 
-export default function GroupPage() {
+export default function TeamListPage() {
   const { isOpen, toggle } = useModalStore();
   const { tier } = userDataStore();
 
@@ -28,7 +29,7 @@ export default function GroupPage() {
 
   async function fetchGroupList() {
     try {
-      const array = await getGroupList(tier);
+      const array = await getTeamList(tier);
       setTeams(array);
       console.log(array);
     } catch (error) {
@@ -38,7 +39,7 @@ export default function GroupPage() {
   async function handleCreateTeam(event) {
     event.preventDefault();
     try {
-      const success = await createGroup(form);
+      const success = await createTeam(form);
       if (success) await fetchGroupList();
       else throw new Error('팀 생성 실패');
       toggle();
@@ -127,9 +128,9 @@ export default function GroupPage() {
   function TeamList({ teams }) {
     return (
       <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 px-4'>
-        {teams.map((team, index) => (
+        {teams.map((team) => (
           <div
-            key={index}
+            key={team.teamId}
             className='rounded-xl shadow-md bg-white p-4 flex flex-col justify-between'
           >
             <h3 className='text-lg font-semibold mb-2'>{team.teamName}</h3>
@@ -137,20 +138,25 @@ export default function GroupPage() {
             <p className='text-sm mb-1'>
               인원 : {team.current_member_count}/{team.maxMember}
             </p>
-            <p className='text-sm mb-3'>등급: {team.tier}</p>
-            <p className=''>{teams.dueDate}</p>
+            <p className='text-sm mb-3'>등급: {team.teamTier}</p>
+            <p className=''>{team.dueDate}</p>
 
-            {team.members >= 10 ? (
-              <button
-                className='bg-gray-300 text-white py-1 px-4 rounded cursor-not-allowed'
-                disabled
+            {team.is_joined ? (
+              <Link
+                to={`/team/${team.teamId}`}
+                className='bg-base2 text-white py-1 px-4'
               >
-                참여
+                이동
+              </Link>
+            ) : team.maxMember <= team.current_member_count ? (
+              <button
+                disabled
+                className='bg-base1 text-white py-1 px-4 rounded hover:opacity-5'
+              >
+                마감
               </button>
             ) : (
-              <button className='bg-[#1f2667] text-white py-1 px-4 rounded hover:bg-[#1f2667]/90'>
-                참여
-              </button>
+              <button className='bg-base1 text-white py-1 px-4'>참여</button>
             )}
           </div>
         ))}

@@ -39,6 +39,12 @@ export const questHandlers = [
 
     return HttpResponse.json({ success: true }, { status: 201 });
   }),
+  // 문제 목록 조회
+  http.get('/quest/:teamId', ({ params }) => {
+    const { teamId } = params;
+    const quest = quests.filter((quest) => quest.teamId == teamId);
+    return HttpResponse.json(quest);
+  }),
 
   // 문제 상세 조회
   http.get('/quest/:teamId/:questId', ({ params }) => {
@@ -49,23 +55,21 @@ export const questHandlers = [
 
     if (!quest)
       return HttpResponse.json({ message: '퀘스트 없음' }, { status: 404 });
-
-    const {
-      questName,
-      questStart,
-      questDue,
-      questStatus,
-      questLink,
-      incompletedUser,
-    } = quest;
-
-    return HttpResponse.json({
-      questName,
-      questStart,
-      questDue,
-      questStatus,
-      questLink,
-      incompletedUser,
+    return HttpResponse.json(quest);
+  }),
+  http.post('/quest/:teamId/:questId/status', ({ params }) => {
+    const { teamId, questId } = params;
+    const userId = localStorage.getItem('id');
+    const quest = quests.find(
+      (q) => q.teamId === Number(teamId) && q.questId === Number(questId)
+    );
+    if (!quest)
+      return HttpResponse.json({ message: '퀘스트 없음' }, { status: 404 });
+    const newQuest = quest.questUserList.map((user) => {
+      if (userId == user.id) return { id: user.id, status: !user.status };
+      return user;
     });
+    console.log(newQuest);
+    return HttpResponse.json({ status: 200 });
   }),
 ];

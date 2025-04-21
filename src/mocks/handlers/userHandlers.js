@@ -1,10 +1,9 @@
 import { http, HttpResponse } from 'msw';
 import { users } from '../data/users';
 
-const userId = localStorage.getItem('id');
-
 export const userHandlers = [
   http.get('/user', () => {
+    const userId = localStorage.getItem('id');
     if (!userId) return HttpResponse.json({ status: 401 });
     const user = users.find((u) => u.userId === userId);
     if (user) {
@@ -12,6 +11,7 @@ export const userHandlers = [
         nickname: user.nickname,
         email: user.email,
         tier: user.tier,
+        teamId: user.teamId,
       });
     } else {
       return HttpResponse.json(
