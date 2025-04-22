@@ -1,4 +1,4 @@
-import { Routes, Route, Link, Outlet } from 'react-router-dom';
+import { Routes, Route, Link, Outlet, Navigate } from 'react-router-dom';
 import AuthTestPage from './pages/test/AuthTestPage';
 import TeamTestPage from './pages/test/TeamTestPage';
 import QuestTestPage from './pages/test/QuestTestPage';
@@ -19,8 +19,7 @@ import TeamListPage from './pages/teamListPage';
 import CodeEditorPage from './pages/CodeEditorPage';
 
 export default function App() {
-  const { teamId } = userDataStore();
-  console.log(isLoggedIn());
+  const { team_id } = userDataStore();
   return (
     <Routes>
       <Route path='/' element={<AppLayout />}>
@@ -29,7 +28,7 @@ export default function App() {
           path='intro'
           element={
             isLoggedIn() ? (
-              <TeamMainPage link={`team/${teamId}`} />
+              <Navigate to={`/team/${team_id}`} replace />
             ) : (
               <IntroPage />
             )
@@ -42,7 +41,10 @@ export default function App() {
         <Route path='membership' element={<MembershipPage />} />
         <Route path='find-id' element={<FindIdPage />} />
         <Route path='find-password' element={<FindPasswordPage />} />
-        <Route path='code/:questid/:userid' element={<CodeEditorPage />} />
+        <Route
+          path='code/:team_id/:quest_id/:user_id'
+          element={<CodeEditorPage />}
+        />
       </Route>
 
       {/* api 테스트 확인하세요 */}
@@ -58,7 +60,7 @@ export default function App() {
 }
 function AppLayout() {
   return (
-    <div>
+    <div className='flex flex-col w-screen h-screen'>
       <Header />
       <Outlet></Outlet>
     </div>
