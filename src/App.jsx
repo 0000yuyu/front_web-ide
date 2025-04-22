@@ -31,7 +31,6 @@ export default function App() {
             )
           }
         />
-        <Route path='quest/:teamId/:questId' element={<QuestPage />} />
         <Route path='login' element={<LoginPage />} />
         <Route path='membership' element={<MembershipPage />} />
         <Route path='find-id' element={<FindIdPage />} />
