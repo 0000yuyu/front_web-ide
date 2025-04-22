@@ -1,121 +1,86 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  UseUserStore,
-  UseNotice,
-  useModalStore,
-  useProblemStore,
-} from "./TeamStore";
+import { useModalStore } from "./TeamStore";
+import { Link, useParams } from "react-router-dom";
+import { getTeam, getTeamMembers } from "@/utils/teamManage";
+import { getQuestList, createQuest } from "@/utils/questManage";
+import { userDataStore } from "@/store/userDataStore";
 
-export default function Page() {
-  const { teamId, profile, tiers } = UseUserStore();
-  const { notices } = UseNotice();
+export default function TeamMainPage() {
   const { isOpen, toggle } = useModalStore();
-  const { addProblem } = useProblemStore();
+  const { tier, teamId } = userDataStore();
 
   //팀
   const [form, setForm] = useState({
-    teamId: 1,
-    questId: 1,
-    questName: "숨바꼭질3",
-    questStart: "2025-04-01",
-    questDue: "2025-04-03",
-    questLink: "https://example.com",
-    userId: "user123",
-    questStatus: "COMPLETED",
+    team_id: "",
+    quest_name: "",
+    user_id: "",
+    quest_start: "",
+    quest_due: "",
+    quest_link: "",
   });
-  const [results, setResults] = useState({});
+
+  const [quests, setQusets] = useState([]);
+
+  //const [results, setResults] = useState({});
+
+  async function fetchQuestList() {
+    try {
+      const array = await getQuestList();
+      setQusets(array);
+      console.log(array);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async function handleCreateQuest(event) {
+    event.preventDefault();
+
+    if (!form.quest_name.trim()) {
+      alert("문제 번호를 입력해주세요");
+      return;
+    }
+
+    if (!form.quest_due.trim()) {
+      alert("마감 일자를 입력해주세요");
+      return;
+    }
+
+    if (!form.quest_start.trim()) {
+      alert("링크를 입력해주세요");
+      return;
+    }
+
+    try {
+      const success = await createQuest(form);
+      if (success) {
+        await fetchQuestList();
+        setForm({
+          quest_name: "",
+          user_id: "",
+          quest_start: "",
+          quest_due: "",
+          quest_link: "",
+        });
+      } else {
+        throw new Error("문제 생성 실패");
+      }
+      toggle();
+    } catch (error) {
+      alert(error.message);
+    }
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const updateResult = (key, value) => {
-    setResults((prev) => ({ ...prev, [key]: value }));
-  };
-
-  const runTest = async (type) => {
-    try {
-      const headers = { "Content-Type": "application/json" };
-      if (type === "createQuest") {
-        const res = await fetch("/quest", {
-          method: "POST",
-          headers,
-          body: JSON.stringify({
-            teamId: form.teamId,
-            questName: form.questName,
-            questStart: form.questStart,
-            questDue: form.questDue,
-            questLink: form.questLink,
-          }),
-        });
-        const data = await res.json();
-        updateResult("createQuest", { status: res.status, ...data });
-
-        if (res.ok) {
-          addProblem({
-            id: Date.now(),
-            questName: form.questName,
-            questDue: form.questDue,
-            teamSize: "0/10",
-            status: "시작",
-          });
-          setForm({
-            teamId: 1,
-            questId: 1,
-            questName: "",
-            questStart: "",
-            questDue: "",
-            questLink: "",
-            userId: "user123",
-            questStatus: "COMPLETED",
-          });
-        }
-      }
-      if (type === "questDetail") {
-        const res = await fetch(`/quest/${form.teamId}/${form.questId}`);
-        const data = await res.json();
-        updateResult("questDetail", { status: res.status, ...data });
-      }
-      if (type === "updateStatus") {
-        const res = await fetch(
-          `/code/${form.teamId}/${form.questId}/${form.userId}/status`,
-          {
-            method: "PATCH",
-            headers,
-            body: JSON.stringify({
-              teamId: form.teamId,
-              questId: form.questId,
-              userId: form.userId,
-              questStatus: form.questStatus,
-            }),
-          }
-        );
-        const data = await res.json();
-        updateResult("updateStatus", { status: res.status, ...data });
-      }
-    } catch (err) {
-      updateResult(type, { status: "error", message: err.message });
-    }
-  };
-
-  const Section = ({ title, id, children }) => (
-    <div className="mb-6 p-4 border border-transparent3 rounded-lg bg-transparent2">
+  const Section = ({ title, children }) => (
+    <div className="mb-6 p-4 border border-transparent3 rounded-lg bg-white">
       <div className="flex items-center justify-between mb-2">
         <h3 className="text-base1 font-semibold">{title}</h3>
       </div>
       <div>{children}</div>
-      {results[id] && (
-        <div
-          className={`mt-3 p-3 text-sm rounded-lg ${
-            results[id].status === 200
-              ? "bg-base3 text-white"
-              : "bg-error2 text-error"
-          }`}
-        >
-          <pre>{JSON.stringify(results[id], null, 2)}</pre>
-        </div>
-      )}
     </div>
   );
 
@@ -141,14 +106,17 @@ export default function Page() {
         onClick={toggle}
       >
         <div onClick={(e) => e.stopPropagation()}>
-          <Section title="문제 생성 테스트" id="createQuest">
-            <Input name="teamId" placeholder="팀 ID" type="number" />
-            <Input name="questName" placeholder="문제 이름" />
-            <Input name="questStart" placeholder="시작일 (YYYY-MM-DD)" />
-            <Input name="questDue" placeholder="마감일 (YYYY-MM-DD)" />
-            <Input name="questLink" placeholder="문제 링크" />
+          <Section title="문제 생성" id="createQuest">
+            생성자:{" "}
+            <Input name="user_id" placeholder="생성자 이름" type="number" />
+            문제명:
+            <Input name="quest_name" placeholder="문제 이름" />
+            시작일:{" "}
+            <Input name="quest_start" placeholder="시작일 (YYYY-MM-DD)" />
+            마감일: <Input name="quest_due" placeholder="마감일 (YYYY-MM-DD)" />
+            문제 링크: <Input name="quest_link" placeholder="문제 링크" />
             <button
-              onClick={() => runTest("createQuest")}
+              onClick={handleCreateQuest}
               className="bg-base1 text-white px-4 py-1 rounded"
             >
               문제 생성
@@ -159,21 +127,23 @@ export default function Page() {
     );
   }
 
-  function ProblemList() {
-    const { problems } = useProblemStore();
-
+  function ProblemList({ quests }) {
     return (
       <div className="grid grid-cols-2 gap-4 mt-4">
-        {problems.map((problem) => (
-          <div key={problem.id} className="p-4 border rounded shadow-sm">
+        {quests.map((quest) => (
+          <div key={quest.id} className="p-4 border rounded shadow-sm">
             <div className="flex justify-between items-center">
-              <h2 className="font-semibold">{problem.questName}</h2>
-              <span className="text-white text-sm px-2 py-1 rounded bg-[#2D336B]">
-                {problem.status}
-              </span>
+              <h2 className="font-semibold">{quest.quest_name}</h2>
+              {quest.status}
+              <Link
+                to={`/quest/${team_id}/${quest.quest_name}`}
+                className="text-white text-sm px-2 py-1 rounded bg-[#2D336B]"
+              >
+                이동
+              </Link>
             </div>
-            <p className="text-sm mt-2">인원: {problem.teamSize}</p>
-            <p className="text-sm">마감일: {problem.questDue}</p>
+            <p className="text-sm mt-2">인원: {quest.teamSize}</p>
+            <p className="text-sm">마감일: {quest.quest_due}</p>
           </div>
         ))}
       </div>
@@ -223,11 +193,6 @@ export default function Page() {
 
   return (
     <>
-      {/* 헤더 */}
-      <header className="mx-8 bg-[#A9B5DF] text-black px-6 py-4 flex justify-between items-center rounded-b-lg">
-        <h1 className="text-2xl font-bold">AlgoMento</h1>
-        <button className="text-sm underline">로그아웃</button>
-      </header>
       <div className="flex items-start justify-stretch bg-oklch(98.5% 0 0)">
         <nav className="mt-10 h-30 w-12 bg-gray-800 text-white">
           <div className="flex flex-col text-xs tracking-tight text-center">
@@ -242,42 +207,30 @@ export default function Page() {
         <div className="flex-1 p-6 pt-0 min-h-screen justify-items-stretch">
           {/* 팀 정보 */}
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold mb-2">{teamId}</h2>
-            <p>{tiers}</p>
+            <h2 className="text-lg font-semibold mb-2">팀명:{teamId}</h2>
+            <p>{tier}</p>
           </div>
           <section className="divide-x-1 h-48 max-h-48 grid grid-cols-3 gap-0 mb-6">
             <div className="col-span-2 bg-white shadow rounded-l-lg p-4">
               {/* 공지사항 */}
               <div className="text-sm text-gray-600 whitespace-pre-line">
-                {notices.map((n) => (
-                  <p key={n.id} className="mb-2">
-                    {n.title}
-                  </p>
-                ))}
+                teamData.teamDescription
               </div>
             </div>
 
             <div className="overflow-y-scroll bg-white shadow rounded-r-lg p-4 ">
               <h3 className="font-semibold mb-2">User list</h3>
               <ul className="text-sm text-gray-700 space-y-1">
-                {[
-                  "정상모",
-                  "김지환",
-                  "송유진",
-                  "최은희",
-                  "이지윤",
-                  "김구룡",
-                ].map((user) => (
-                  <li key={user} className="flex items-center gap-2">
+                {/*{memberList.map((member, index) => (
+                  <li key={index} className="flex items-center gap-2">
                     <img
-                      src={profile || "/default.png"}
                       alt="프로필"
                       className="w-10 h-10 rounded-full bg-gray-200"
                     />
-                    <span className="w-2 h-2 rounded-full" />
-                    {user}
+                    <span className="h-2 rounded-full" />
+                    {member.nickname}
                   </li>
-                ))}
+                ))}*/}
               </ul>
             </div>
           </section>
@@ -294,7 +247,7 @@ export default function Page() {
               </button>
             </div>
             {isOpen && <Modal />}
-            <ProblemList />
+            <ProblemList quests={quests} />
           </div>
         </div>
         {/*채팅*/}

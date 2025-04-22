@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 import { create } from 'zustand';
+=======
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+>>>>>>> 6e62d7b (refact : Teamlist dummy data deleted)
 
 export const userDataStore = create((set, get) => ({
   user_id: null,
@@ -24,6 +29,7 @@ export const userDataStore = create((set, get) => ({
       email: null,
       team_id: null,
     }),
+<<<<<<< HEAD
 
   // 세션에서 데이터를 로드하는 함수
   loadFromSessionStorage: () => {
@@ -40,6 +46,11 @@ export const userDataStore = create((set, get) => ({
     sessionStorage.setItem(
       'user-data',
       JSON.stringify({
+=======
+    {
+      name: "user-data-storage",
+      partialize: (state) => ({
+>>>>>>> 6e62d7b (refact : Teamlist dummy data deleted)
         nickname: state.nickname,
         tier: state.tier,
         email: state.email,
