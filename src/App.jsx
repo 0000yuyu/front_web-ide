@@ -6,7 +6,6 @@ import CodeTestPage from './pages/test/CodeTestPage';
 import UserTestPage from './pages/test/UserTestPage';
 
 import IntroPage from './pages/IntroPage';
-import QuestPage from './pages/QuestPage';
 import Header from './components/Header';
 import { isLoggedIn, removeToken } from './utils/auth';
 import LoginPage from './pages/LoginPage';
@@ -14,7 +13,6 @@ import FindIdPage from './pages/FindIdPage';
 import FindPasswordPage from './pages/FindPasswordPage';
 import MembershipPage from './pages/MembershipPage';
 import { userDataStore } from './store/userDataStore';
-import TeamListPage from './pages/teamListPage';
 import CodeEditorPage from './pages/CodeEditorPage';
 
 export default function App() {
@@ -33,7 +31,6 @@ export default function App() {
             )
           }
         />
-        <Route path='groups' element={<TeamListPage />} />
         <Route path='quest/:teamId/:questId' element={<QuestPage />} />
         <Route path='login' element={<LoginPage />} />
         <Route path='membership' element={<MembershipPage />} />
