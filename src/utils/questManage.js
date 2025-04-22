@@ -49,3 +49,21 @@ export async function updateQuestState(teamId, questId) {
   if (response.ok) return true;
   else return false;
 }
+// 새로운 퀘스트를 생성하는 비동기 함수
+export async function createQuest(form) {
+  const response = await fetch("/quest", {
+    method: "POST",
+    headers,
+
+    body: JSON.stringify({
+      ...form,
+    }),
+  });
+
+  if (response.ok) return true;
+  else {
+    const error = await response.text();
+    console.error("퀘스트 생성 실패:", error);
+    return false;
+  }
+}

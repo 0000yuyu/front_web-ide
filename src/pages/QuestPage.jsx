@@ -1,38 +1,46 @@
+// 퀘스트 관리 함수를 가져옵니다.
 import { getQuest, updateQuestState } from "@/utils/questManage";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 export default function QuestPage() {
+  // URL에서 팀 ID와 퀘스트 ID를 가져옵니다.
   const { teamId, questId } = useParams();
+  // 퀘스트 정보를 저장할 상태를 초기화합니다.
   const [quest, setQuest] = useState({});
   useEffect(() => {
+    // 컴포넌트가 로드되면 퀘스트 정보를 가져오는 함수를 실행합니다.
     fetchQuest();
   }, []);
   async function fetchQuest() {
     try {
+      // 팀 ID와 퀘스트 ID를 사용하여 퀘스트 정보를 가져옵니다.
       const dataArray = await getQuest(teamId, questId);
-      console.log(dataArray);
-      setQuest(dataArray);
+      console.log(dataArray); // 가져온 데이터를 콘솔에 로그로 출력합니다.
+      setQuest(dataArray); // 가져온 데이터를 상태에 저장합니다.
     } catch (error) {
-      console.log(error);
+      console.log(error); // 오류가 발생하면 콘솔에 로그로 출력합니다.
     }
   }
 
   // 체크박스 상태 변경 핸들러
-  async function handleToggle() {
+  async function handleToggle(userId) {
     try {
-      const success = await updateQuestState(teamId, questId);
+      // 팀 ID와 퀘스트 ID를 사용하여 퀘스트 상태를 업데이트합니다.
+      const success = await updateQuestState(teamId, questId, userId);
       console.log(success);
+      fetchQuest(); // 상태 반영을 위해 다시 불러오기
     } catch (error) {
       console.log(error);
     }
   }
   // 완료된 인원
+  // 퀘스트에 완료된 사용자의 수를 계산합니다.
   const totalScore = quest.questUserList?.filter((user) => user.status).length;
 
   return (
     <div>
-      <div className="flex items-start justify-stretch bg-oklch(98.5% 0 0)">
+      <div className="flex items-start justify-stretch bg-[#f9f9f9]">
         <div className="flex-1 p-6 pt-0 min-h-screen justify-items-stretch">
           <div>
             <div className="text-3xl font-bold mt-6 mb-4">{questId}번</div>
@@ -88,7 +96,7 @@ export default function QuestPage() {
                     `}
                     type="checkbox"
                     checked={user.status}
-                    onChange={() => handleToggle(user.userid)}
+                    onChange={() => handleToggle(user.userId)}
                   />
                   <span
                     className={`w-full text-sm rounded-lg px-3 py-2 outline-none border 

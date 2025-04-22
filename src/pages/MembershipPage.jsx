@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { userDataStore } from '@/store/userDataStore';
 import { checkIdDuplicate, membership } from '@/utils/userManage';
 import React, { useRef, useState } from 'react';
@@ -113,8 +114,38 @@ export default function MembershipPage() {
   const nickNameRef = useRef(null);
   const emailRef = useRef(null);
 
+=======
+import { checkIdDuplicate, membership } from "@/utils/userManage"; // 회원가입 및 아이디 중복 확인 기능을 포함하는 모듈을 가져옵니다.
+import React, { useState } from "react"; // 리액트와 상태 관리를 위한 useState를 가져옵니다.
+import { Link } from "react-router-dom"; // 리액트 라우터 도메인을 가져옵니다.
+
+export default function MembershipPage() {
+  const [id, setId] = useState(""); // 아이디 상태를 관리합니다.
+  const [password, setPassword] = useState(""); // 비밀번호 상태를 관리합니다.
+  const [nickName, setNickName] = useState(""); // 닉네임 상태를 관리합니다.
+  const [email, setEmail] = useState(""); // 이메일 상태를 관리합니다.
+  const handleLogin = async () => {
+    // 회원가입 로직을 처리하는 함수입니다.
+    if (id == "" || password == "")
+      alert(
+        "아이디와 비밀번호를 모두 입력해주세요."
+      ); // 아이디와 비밀번호가 입력되지 않았으면 경고 메시지를 표시합니다.
+    else {
+      try {
+        const success = await membership(id, password); // 회원가입 API를 호출합니다.
+        if (success)
+          alert("회원가입 완료"); // 성공하면 회원가입 완료 메시지를 표시합니다.
+        else alert("아이디와 비밀번호를 확인해주세요."); // 실패하면 확인 메시지를 표시합니다.
+      } catch (error) {
+        console.log(error); // 오류가 발생하면 콘솔에 로그를 출력합니다.
+      }
+    }
+  };
+>>>>>>> 1c86d02 (refact: QiestPage, Team Main Dummy data deleted)
   const handleCheckId = async () => {
+    // 아이디 중복 확인 로직을 처리하는 함수입니다.
     try {
+<<<<<<< HEAD
       if (!id)
         setMessages((prev) => ({
           ...prev,
@@ -127,8 +158,17 @@ export default function MembershipPage() {
           id: { type: 'success', text: '사용할 수 있는 아이디 입니다.' },
         }));
       } else throw new Error('사용중');
+=======
+      if (!id) throw new Error("공백"); // 아이디가 입력되지 않았으면 오류를 발생시킵니다.
+      const success = await checkIdDuplicate(id); // 아이디 중복 확인 API를 호출합니다.
+      if (success)
+        alert(
+          "사용할 수 있는 ID"
+        ); // 성공하면 사용할 수 있는 ID라는 메시지를 표시합니다.
+      else throw new Error("사용중"); // 실패하면 사용중인 ID라는 오류를 발생시킵니다.
+>>>>>>> 1c86d02 (refact: QiestPage, Team Main Dummy data deleted)
     } catch (error) {
-      alert('사용할 수 없는 아이디\n=' + error.message);
+      alert("사용할 수 없는 아이디\n=" + error.message); // 오류가 발생하면 사용할 수 없는 아이디라는 메시지를 표시합니다.
     }
   };
 
@@ -191,6 +231,7 @@ export default function MembershipPage() {
   };
 
   return (
+<<<<<<< HEAD
     <div className='border border-base1 flex justify-center items-center h-full w-full'>
       <Form>
         <FormName>회원가입</FormName>
@@ -292,5 +333,60 @@ export default function MembershipPage() {
         </FormContent>
       </Form>
     </div>
+=======
+    <form action={handleLogin}>
+      {" "}
+      // 회원가입 폼을 정의합니다.
+      <label htmlFor="id">아이디</label>
+      <input
+        id="id"
+        value={id}
+        onChange={(e) => setId(e.target.value)}
+        type="text"
+        name="id"
+      />
+      <button type="button" onClick={() => handleCheckId()}>
+        중복 확인
+      </button>
+      <div>
+        <label htmlFor="pwd">비밀번호</label>
+        <input
+          id="pwd"
+          type="text"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          name="pwd"
+        />
+      </div>
+      <div>
+        <label htmlFor="nickName">닉네임</label>
+        <input
+          id="nickName"
+          type="text"
+          value={nickName}
+          onChange={(e) => setNickName(e.target.value)}
+          name="nickName"
+        />
+      </div>
+      <div>
+        <label htmlFor="email">이메일</label>
+        <input
+          id="email"
+          type="text"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          name="email"
+        />
+      </div>
+      <input type="submit" value="가입" />
+      <div>
+        <Link to="/membership">회원가입</Link>
+      </div>
+      <div>
+        <Link to="/find-id">아이디 찾기</Link>
+        <Link to="/find-password">비밀번호 찾기</Link>
+      </div>
+    </form>
+>>>>>>> 1c86d02 (refact: QiestPage, Team Main Dummy data deleted)
   );
 }
