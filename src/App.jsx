@@ -13,7 +13,6 @@ import LoginPage from './pages/LoginPage';
 import FindIdPage from './pages/FindIdPage';
 import FindPasswordPage from './pages/FindPasswordPage';
 import MembershipPage from './pages/MembershipPage';
-import TeamMainPage from './pages/teamMainPage';
 import { userDataStore } from './store/userDataStore';
 import TeamListPage from './pages/teamListPage';
 import CodeEditorPage from './pages/CodeEditorPage';
@@ -36,7 +35,6 @@ export default function App() {
         />
         <Route path='groups' element={<TeamListPage />} />
         <Route path='quest/:teamId/:questId' element={<QuestPage />} />
-        <Route path='team/:teamId' element={<TeamMainPage />} />
         <Route path='login' element={<LoginPage />} />
         <Route path='membership' element={<MembershipPage />} />
         <Route path='find-id' element={<FindIdPage />} />

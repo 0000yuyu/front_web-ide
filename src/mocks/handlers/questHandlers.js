@@ -47,16 +47,17 @@ export const questHandlers = [
   }),
 
   // 문제 상세 조회
-  http.get('/quest/:teamId/:questId', ({ params }) => {
-    const { teamId, questId } = params;
+  http.get('/quest/:team_id/:quest_id', ({ params }) => {
+    const { team_id, quest_id } = params;
     const quest = quests.find(
-      (q) => q.teamId === Number(teamId) && q.questId === Number(questId)
+      (q) => q.team_id === Number(team_id) && q.quest_id === Number(quest_id)
     );
 
     if (!quest)
       return HttpResponse.json({ message: '퀘스트 없음' }, { status: 404 });
     return HttpResponse.json(quest);
   }),
+  // 문제 상태 변경
   http.post('/quest/:teamId/:questId/status', ({ params }) => {
     const { teamId, questId } = params;
     const userId = localStorage.getItem('id');
