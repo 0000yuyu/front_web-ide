@@ -8,7 +8,7 @@ import UserTestPage from './pages/test/UserTestPage';
 import IntroPage from './pages/IntroPage';
 import QuestPage from './pages/QuestPage';
 import Header from './components/Header';
-import { isLoggedIn } from './utils/auth';
+import { isLoggedIn, removeToken } from './utils/auth';
 import LoginPage from './pages/LoginPage';
 import FindIdPage from './pages/FindIdPage';
 import FindPasswordPage from './pages/FindPasswordPage';

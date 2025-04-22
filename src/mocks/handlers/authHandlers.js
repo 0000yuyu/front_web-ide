@@ -3,18 +3,18 @@ import { users } from '../data/users';
 
 export const authHandlers = [
   // 아이디 중복 확인
-  http.get('/auth/check-id/:userId', ({ params }) => {
-    const { userId } = params;
-    const exists = users.find((u) => u.userId === userId);
-    if (exists) return HttpResponse.json({ isDuplicate: true });
-    else return HttpResponse.json({ isDuplicate: false });
+  http.get('/auth/check-id/:user_id', ({ params }) => {
+    const { user_id } = params;
+    const exists = users.find((u) => u.user_id === user_id);
+    if (exists) return HttpResponse.json({ is_duplicate: true });
+    else return HttpResponse.json({ is_duplicate: false });
   }),
 
   // 로그인
   http.post('/auth/login', async ({ request }) => {
-    const { userId, password } = await request.json();
+    const { user_id, password } = await request.json();
     const user = users.find(
-      (u) => u.userId === userId && u.password === password
+      (u) => u.user_id === user_id && u.password === password
     );
     console.log(user);
 
@@ -24,9 +24,9 @@ export const authHandlers = [
         { status: 401 }
       );
     }
-    localStorage.setItem('id', userId);
+    localStorage.setItem('id', user_id);
 
-    const token = btoa(`${userId}-token`); // 임시 토큰 생성
+    const token = btoa(`${user_id}-token`); // 임시 토큰 생성
     return HttpResponse.json(
       { token, message: '로그인 성공' },
       { status: 200 }
@@ -35,16 +35,16 @@ export const authHandlers = [
 
   // 회원가입
   http.post('/auth/register', async ({ request }) => {
-    const { userId, password, email, nickname } = await request.json();
+    const { user_id, password, email, nickname } = await request.json();
 
-    if (users.find((u) => u.userId === userId)) {
+    if (users.find((u) => u.user_id === user_id)) {
       return HttpResponse.json(
         { message: '이미 존재하는 ID 입니다.' },
         { status: 409 }
       );
     }
 
-    users.push({ userId, password, email, nickname });
+    users.push({ user_id, password, email, nickname });
     return HttpResponse.json({ message: '회원가입 성공' }, { status: 200 });
   }),
 
@@ -54,7 +54,7 @@ export const authHandlers = [
     const user = users.find((u) => u.email === email);
 
     if (user)
-      return HttpResponse.json({ userId: user.userId }, { status: 200 });
+      return HttpResponse.json({ user_id: user.user_id }, { status: 200 });
     else
       return HttpResponse.json(
         { message: '등록되지 않은 사용자' },
@@ -64,8 +64,8 @@ export const authHandlers = [
 
   // 비밀번호 찾기
   http.post('/auth/find-password', async ({ request }) => {
-    const { userId, email } = await request.json();
-    const user = users.find((u) => u.email === email && u.userId === userId);
+    const { user_id, email } = await request.json();
+    const user = users.find((u) => u.email === email && u.user_id === user_id);
 
     if (user)
       return HttpResponse.json(
@@ -81,7 +81,7 @@ export const authHandlers = [
 
   // 로그아웃
   http.post('/auth/logout', () => {
-    localStorage.removeItem('id');
+    sessionStorage.removeItem('id');
     return HttpResponse.json({ success: true }, { status: 200 });
   }),
 ];

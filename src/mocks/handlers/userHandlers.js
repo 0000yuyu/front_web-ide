@@ -3,9 +3,9 @@ import { users } from '../data/users';
 
 export const userHandlers = [
   http.get('/user', () => {
-    const userId = localStorage.getItem('id');
-    if (!userId) return HttpResponse.json({ status: 401 });
-    const user = users.find((u) => u.userId === userId);
+    const user_id = localStorage.getItem('id');
+    if (!user_id) return HttpResponse.json({ status: 401 });
+    const user = users.find((u) => u.user_id === user_id);
     if (user) {
       return HttpResponse.json({
         nickname: user.nickname,

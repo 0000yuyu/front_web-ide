@@ -1,14 +1,12 @@
-import { removeToken, saveToken } from './auth';
+import { removeToken, saveToken, getHeaders } from './auth';
 
-const headers = { 'Content-Type': 'application/json' };
-
-export async function login(userId, password) {
+export async function login(user_id, password) {
   try {
     const response = await fetch('/auth/login', {
       method: 'POST',
-      headers,
+      headers: getHeaders(),
       body: JSON.stringify({
-        userId,
+        user_id,
         password,
       }),
     });
@@ -23,12 +21,13 @@ export async function login(userId, password) {
     return false;
   }
 }
-export async function membership(userId, password, nickname, email) {
+
+export async function membership(user_id, password, nickname, email) {
   try {
     const response = await fetch('/auth/register', {
       method: 'POST',
-      headers,
-      body: JSON.stringify({ userId, password, nickname, email }),
+      headers: getHeaders(),
+      body: JSON.stringify({ user_id, password, nickname, email }),
     });
     if (response.ok) return true;
     else return false;
@@ -40,35 +39,45 @@ export async function membership(userId, password, nickname, email) {
 export function logout() {
   removeToken();
 }
+
 export async function findId(email) {
   const response = await fetch('/auth/find-id', {
     method: 'POST',
-    headers,
+    headers: getHeaders(),
     body: JSON.stringify({ email }),
   });
   const data = await response.json();
-  return data;
+  return data.user_id;
 }
-export async function findPassword(id, email) {
+
+export async function findPassword(user_id, email) {
   const response = await fetch('/auth/find-password', {
     method: 'POST',
-    headers,
-    body: JSON.stringify({ userId: id, email }),
+    headers: getHeaders(),
+    body: JSON.stringify({ user_id, email }),
   });
   if (response.ok) return true;
   else return false;
 }
-export async function checkIdDuplicate(id) {
-  const response = await fetch(`/auth/check-id/${id}`);
+
+export async function checkIdDuplicate(user_id) {
+  const response = await fetch(`/auth/check-id/${user_id}`, {
+    method: 'GET',
+    headers: getHeaders(),
+  });
   if (response.ok) {
     const data = await response.json();
     console.log(data);
-    if (!data.isDuplicate) return true;
+    if (!data.is_duplicate) return true;
   } else return false;
 }
+
 export async function getUserData() {
   try {
-    const res = await fetch(`/user`);
+    const res = await fetch(`/user`, {
+      method: 'GET',
+      headers: getHeaders(),
+    });
     const data = await res.json();
     console.log(data);
     return data;
