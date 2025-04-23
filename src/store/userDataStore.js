@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 export const userDataStore = create((set, get) => ({
   user_id: null,
@@ -27,7 +27,7 @@ export const userDataStore = create((set, get) => ({
 
   // 세션에서 데이터를 로드하는 함수
   loadFromSessionStorage: () => {
-    const savedData = sessionStorage.getItem('user-data');
+    const savedData = sessionStorage.getItem("user-data");
     if (savedData) {
       const { nickname, tier, email, team_id } = JSON.parse(savedData);
       set({ nickname, tier, email, team_id });
@@ -38,7 +38,7 @@ export const userDataStore = create((set, get) => ({
   saveToSessionStorage: () => {
     const state = get(); // `get`을 제대로 사용
     sessionStorage.setItem(
-      'user-data',
+      "user-data",
       JSON.stringify({
         nickname: state.nickname,
         tier: state.tier,

@@ -1,8 +1,8 @@
-import { getHeaders } from './auth';
+import { getHeaders } from "./auth";
 
 export async function getCodeList(team_id, quest_id, user_id) {
   const res = await fetch(`/code/${team_id}/${quest_id}/${user_id}`, {
-    method: 'GET',
+    method: "GET",
     headers: getHeaders(),
   });
   const data = await res.json();
@@ -12,7 +12,7 @@ export async function getCodeList(team_id, quest_id, user_id) {
 export async function addFolder(team_id, quest_id, parent_id, folder_name) {
   try {
     const res = await fetch(`/code/folder`, {
-      method: 'POST',
+      method: "POST",
       headers: getHeaders(),
       body: JSON.stringify({
         team_id,
@@ -23,7 +23,9 @@ export async function addFolder(team_id, quest_id, parent_id, folder_name) {
     });
     const data = await res.json();
     return { status: res.status, ...data };
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 export async function addFile(
@@ -35,7 +37,7 @@ export async function addFile(
 ) {
   try {
     const res = await fetch(`/code/file`, {
-      method: 'POST',
+      method: "POST",
       headers: getHeaders(),
       body: JSON.stringify({
         team_id,
@@ -47,7 +49,9 @@ export async function addFile(
     });
     const data = await res.json();
     return { status: res.status, ...data };
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 export async function editFile(
@@ -69,7 +73,7 @@ export async function editFile(
     code_content
   );
   const res = await fetch(`/code`, {
-    method: 'PUT',
+    method: "PUT",
     headers: getHeaders(),
     body: JSON.stringify({
       team_id,
@@ -86,8 +90,8 @@ export async function editFile(
 }
 
 export async function runCode(code_content, language) {
-  const res = await fetch('/code/run', {
-    method: 'POST',
+  const res = await fetch("/code/run", {
+    method: "POST",
     headers: getHeaders(),
     body: JSON.stringify({
       code_context: code_content,
@@ -100,10 +104,10 @@ export async function runCode(code_content, language) {
 export async function updateQuestState(
   team_id,
   quest_id,
-  status = 'COMPLETED'
+  status = "COMPLETED"
 ) {
   const response = await fetch(`/code/status`, {
-    method: 'PATCH',
+    method: "PATCH",
     headers: getHeaders(),
     body: JSON.stringify({
       team_id,
@@ -117,10 +121,12 @@ export async function updateQuestState(
 export async function getQuest(team_id, quest_id) {
   try {
     const response = await fetch(`/quest/${team_id}/${quest_id}`, {
-      method: 'GET',
+      method: "GET",
       headers: getHeaders,
     });
     const dataArray = await response.json();
     return dataArray;
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
 }

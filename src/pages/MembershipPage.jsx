@@ -1,13 +1,13 @@
-import { userDataStore } from '@/store/userDataStore';
-import { checkIdDuplicate, membership } from '@/utils/userManage';
-import React, { useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { userDataStore } from "@/store/userDataStore";
+import { checkIdDuplicate, membership } from "@/utils/userManage";
+import React, { useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 function Form({ children }) {
   return (
     <div
-      className='flex max-md:gap-3 max-md:flex-col max-md:items-center gap-10  text-transparent3
-    items-start justify-center w-full'
+      className="flex max-md:gap-3 max-md:flex-col max-md:items-center gap-10  text-transparent3
+    items-start justify-center w-full"
     >
       {children}
     </div>
@@ -17,21 +17,21 @@ function Form({ children }) {
 function FormName({ children }) {
   return (
     <h1
-      className='
-    text-xl my-5 font-bold flex'
+      className="
+    text-xl my-5 font-bold flex"
     >
       {children}
     </h1>
   );
 }
 function FormContent({ children }) {
-  return <div className='my-5 flex flex-col gap-10 items-end '>{children}</div>;
+  return <div className="my-5 flex flex-col gap-10 items-end ">{children}</div>;
 }
 
 function Input({
   id,
   label,
-  type = 'text',
+  type = "text",
   placeholder,
   value,
   onChange,
@@ -39,17 +39,17 @@ function Input({
   message,
 }) {
   return (
-    <div className='flex gap-4 mb-4'>
+    <div className="flex gap-4 mb-4">
       {label && (
-        <label className=' text-sm font-bold' htmlFor={id}>
+        <label className=" text-sm font-bold" htmlFor={id}>
           {label}
         </label>
       )}
-      <div className='relative'>
+      <div className="relative">
         <input
           ref={inputRef}
           className={`shadow appearance-none border ${
-            message?.type == 'error' && 'border-error'
+            message?.type == "error" && "border-error"
           }
         rounded p-[5px] px-10 leading-tight focus:outline-none focus:shadow-outline`}
           id={id}
@@ -61,7 +61,7 @@ function Input({
         {message && (
           <span
             className={`${
-              message?.type == 'error' ? 'text-error' : 'text-green-400'
+              message?.type == "error" ? "text-error" : "text-green-400"
             } text-error 
           text-sm mt-1 absolute left-0 bottom-[-20px]`}
           >
@@ -73,11 +73,11 @@ function Input({
   );
 }
 function Seperator() {
-  return <div className='border-r border-base1 self-stretch'></div>;
+  return <div className="border-r border-base1 self-stretch"></div>;
 }
 function FormFooter({ children }) {
   return (
-    <div className='mt-4 flex flex-col gap-2 justify-around items-end'>
+    <div className="mt-4 flex flex-col gap-2 justify-around items-end">
       {children}
     </div>
   );
@@ -85,11 +85,11 @@ function FormFooter({ children }) {
 
 function SubmitButton({ onClick, disabled, children }) {
   return (
-    <div className='flex items-center justify-between w-full'>
+    <div className="flex items-center justify-between w-full">
       <button
-        className='bg-base1 w-full disabled:bg-transparent1 disabled:pointer-events-none hover:opacity-55 text-white 
-        font-bold py-[5px] px-20 rounded focus:outline-none focus:shadow-outline'
-        type='button'
+        className="bg-base1 w-full disabled:bg-transparent1 disabled:pointer-events-none hover:opacity-55 text-white 
+        font-bold py-[5px] px-20 rounded focus:outline-none focus:shadow-outline"
+        type="button"
         disabled={disabled}
         onClick={onClick}
       >
@@ -99,14 +99,14 @@ function SubmitButton({ onClick, disabled, children }) {
   );
 }
 function FormInput({ children }) {
-  return <div className='flex flex-col gap-5 items-end'>{children}</div>;
+  return <div className="flex flex-col gap-5 items-end">{children}</div>;
 }
 
 export default function MembershipPage() {
-  const [id, setId] = useState('');
-  const [password, setPassword] = useState('');
-  const [email, setEmail] = useState('');
-  const [nickName, setNickName] = useState('');
+  const [id, setId] = useState("");
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [nickName, setNickName] = useState("");
   const [messages, setMessages] = useState({});
   const idRef = useRef(null);
   const passwordRef = useRef(null);
@@ -118,17 +118,17 @@ export default function MembershipPage() {
       if (!id)
         setMessages((prev) => ({
           ...prev,
-          id: { type: 'error', text: '아이디를 입력해주세요.' },
+          id: { type: "error", text: "아이디를 입력해주세요." },
         }));
       const success = await checkIdDuplicate(id);
       if (success) {
         setMessages((prev) => ({
           ...prev,
-          id: { type: 'success', text: '사용할 수 있는 아이디 입니다.' },
+          id: { type: "success", text: "사용할 수 있는 아이디 입니다." },
         }));
-      } else throw new Error('사용중');
+      } else throw new Error("사용중");
     } catch (error) {
-      alert('사용할 수 없는 아이디\n=' + error.message);
+      alert("사용할 수 없는 아이디\n=" + error.message);
     }
   };
 
@@ -136,33 +136,33 @@ export default function MembershipPage() {
     const newMessages = {};
     let hasError = false;
 
-    if (id === '') {
-      newMessages.id = { type: 'error', text: '아이디를 입력해주세요.' };
+    if (id === "") {
+      newMessages.id = { type: "error", text: "아이디를 입력해주세요." };
       hasError = true;
-    } else if (messages.id?.type != 'success') {
+    } else if (messages.id?.type != "success") {
       newMessages.id = {
-        type: 'error',
-        text: '아이디 중복 검사를 완료해주세요',
+        type: "error",
+        text: "아이디 중복 검사를 완료해주세요",
       };
       hasError = true;
     }
 
-    if (password === '') {
+    if (password === "") {
       newMessages.password = {
-        type: 'error',
-        text: '비밀번호를 입력해주세요.',
+        type: "error",
+        text: "비밀번호를 입력해주세요.",
       };
       hasError = true;
     }
-    if (email === '') {
-      newMessages.email = { type: 'error', text: '이메일을 입력해주세요.' };
+    if (email === "") {
+      newMessages.email = { type: "error", text: "이메일을 입력해주세요." };
       hasError = true;
     }
 
-    if (nickName === '') {
+    if (nickName === "") {
       newMessages.nickName = {
-        type: 'error',
-        text: '닉네임을 입력해주세요.',
+        type: "error",
+        text: "닉네임을 입력해주세요.",
       };
       hasError = true;
     }
@@ -181,17 +181,17 @@ export default function MembershipPage() {
     try {
       const success = await membership(id, password);
       if (success) {
-        alert('회원가입 완료');
+        alert("회원가입 완료");
       } else {
         throw new Error();
       }
     } catch (error) {
-      alert('회원가입 중 오류가 발생했습니다.' + error);
+      alert("회원가입 중 오류가 발생했습니다." + error);
     }
   };
 
   return (
-    <div className='border border-base1 flex justify-center items-center h-full w-full'>
+    <div className="border border-base1 flex justify-center items-center h-full w-full">
       <Form>
         <FormName>회원가입</FormName>
         <Seperator />
@@ -199,10 +199,10 @@ export default function MembershipPage() {
           <FormInput>
             <Input
               inputRef={idRef}
-              id='id'
-              label='아이디'
-              type='text'
-              placeholder='아이디를 입력하세요'
+              id="id"
+              label="아이디"
+              type="text"
+              placeholder="아이디를 입력하세요"
               value={id}
               message={messages.id}
               onChange={(e) => {
@@ -213,15 +213,15 @@ export default function MembershipPage() {
                 }));
               }}
             />
-            <SubmitButton onClick={handleCheckId} className='w-[30px]'>
+            <SubmitButton onClick={handleCheckId} className="w-[30px]">
               중복 확인
             </SubmitButton>
             <Input
               inputRef={passwordRef}
-              id='password'
-              label='비밀번호'
-              type='password'
-              placeholder='비밀번호를 입력하세요'
+              id="password"
+              label="비밀번호"
+              type="password"
+              placeholder="비밀번호를 입력하세요"
               value={password}
               message={messages.password}
               onChange={(e) => {
@@ -234,10 +234,10 @@ export default function MembershipPage() {
             />
             <Input
               inputRef={nickNameRef}
-              id='nickname'
-              label='닉네임'
-              type='text'
-              placeholder='닉네임을 입력하세요'
+              id="nickname"
+              label="닉네임"
+              type="text"
+              placeholder="닉네임을 입력하세요"
               value={nickName}
               message={messages.nickName}
               onChange={(e) => {
@@ -250,10 +250,10 @@ export default function MembershipPage() {
             />
             <Input
               inputRef={emailRef}
-              id='email'
-              label='이메일'
-              type='email'
-              placeholder='이메일을 입력하세요'
+              id="email"
+              label="이메일"
+              type="email"
+              placeholder="이메일을 입력하세요"
               value={email}
               message={messages.email}
               onChange={(e) => {
@@ -269,21 +269,21 @@ export default function MembershipPage() {
 
           <FormFooter>
             <Link
-              to='/membership'
-              className='text-sm text-gray-600 hover:underline'
+              to="/membership"
+              className="text-sm text-gray-600 hover:underline"
             >
               회원가입
             </Link>
-            <div className='flex gap-5'>
+            <div className="flex gap-5">
               <Link
-                to='/find-id'
-                className='text-sm text-gray-600 hover:underline'
+                to="/find-id"
+                className="text-sm text-gray-600 hover:underline"
               >
                 아이디 찾기
               </Link>
               <Link
-                to='/find-password'
-                className='text-sm text-gray-600 hover:underline'
+                to="/find-password"
+                className="text-sm text-gray-600 hover:underline"
               >
                 비밀번호 찾기
               </Link>
