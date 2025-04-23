@@ -3,7 +3,7 @@ let socket = null;
 export const connectChatSocket = (token, onMessage) => {
   if (socket && socket.readyState === WebSocket.OPEN) return;
 
-  socket = new WebSocket(`ws://localhost:5173/ws/chat?token=${token}`);
+  socket = new WebSocket(`ws://ws/chat?token=${token}`);
 
   socket.onopen = () => {
     console.log("🟢 WebSocket 연결됨");
@@ -44,3 +44,33 @@ export const disconnectChatSocket = () => {
     socket = null;
   }
 };
+
+//채팅 검색
+export async function searchCahtMessages(teamId, keyword) {
+  try {
+    const res = await fetch(
+      `/api/chat/search?teamId=${teamId}&keyword=${encodeURIComponent(keyword)}`
+    );
+    if (!res.ok) throw new Error("search false");
+
+    const data = await res.json();
+    return data; // [{nickname, content, timestamp, user_id, team_id}, ...]
+  } catch (error) {
+    console.error("chating search error: ", error);
+    return [];
+  }
+}
+
+//채팅 조회
+export async function getChatHistory(teamId) {
+  try {
+    const res = await fetch(`/api/chat/history?teamId=${teamId}`);
+    if (!res.ok) throw new Error("chatHistory false");
+
+    const data = await res.json();
+    return data; //메세지 배열
+  } catch (error) {
+    console.error("chatHistory error: ", error);
+    return [];
+  }
+}
