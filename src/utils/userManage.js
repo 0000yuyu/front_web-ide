@@ -2,7 +2,7 @@ import { removeToken, saveToken, getHeaders } from './auth';
 
 export async function login(user_id, password) {
   try {
-    const response = await fetch('/auth/login', {
+    const response = await fetch('/api/auth/login', {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify({
@@ -24,7 +24,7 @@ export async function login(user_id, password) {
 
 export async function membership(user_id, password, nickname, email) {
   try {
-    const response = await fetch('/auth/register', {
+    const response = await fetch('/api/auth/register', {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify({ user_id, password, nickname, email }),
@@ -41,7 +41,7 @@ export function logout() {
 }
 
 export async function findId(email) {
-  const response = await fetch('/auth/find-id', {
+  const response = await fetch('/api/auth/find-id', {
     method: 'POST',
     headers: getHeaders(),
     body: JSON.stringify({ email }),
@@ -51,7 +51,7 @@ export async function findId(email) {
 }
 
 export async function findPassword(user_id, email) {
-  const response = await fetch('/auth/find-password', {
+  const response = await fetch('/api/auth/find-password', {
     method: 'POST',
     headers: getHeaders(),
     body: JSON.stringify({ user_id, email }),
@@ -61,7 +61,7 @@ export async function findPassword(user_id, email) {
 }
 
 export async function checkIdDuplicate(user_id) {
-  const response = await fetch(`/auth/check-id/${user_id}`, {
+  const response = await fetch(`/api/auth/check-id/${user_id}`, {
     method: 'GET',
     headers: getHeaders(),
   });
@@ -74,7 +74,7 @@ export async function checkIdDuplicate(user_id) {
 
 export async function getUserData() {
   try {
-    const res = await fetch(`/user`, {
+    const res = await fetch(`/api/user`, {
       method: 'GET',
       headers: getHeaders(),
     });

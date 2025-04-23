@@ -31,7 +31,7 @@ export default function CodeEditorPage() {
 
   async function fetchQuest() {
     try {
-      const data = await getQueszt(team_id, quest_id);
+      const data = await getQuest(team_id, quest_id);
       console.log(data);
       setQuest(data);
     } catch (error) {}
@@ -40,7 +40,7 @@ export default function CodeEditorPage() {
   // 폴더 구조를 가져와서 트리 구조로 변환ab
   async function fetchFolderStructure() {
     try {
-      const flatStructure = await getCodeList(team_id, quest_id, user_id);
+      const flatStructure = await getCodeList(quest_id, user_id);
       console.log(flatStructure.length);
       if (flatStructure.length == 0) {
         console.log('실행');
@@ -101,7 +101,7 @@ export default function CodeEditorPage() {
   // 폴더 추가 함수
   const handleAddFolder = async (parent_id, folder_name) => {
     try {
-      const { status, folder_id } = await addFolder(
+      const { status } = await addFolder(
         team_id,
         quest_id,
         parent_id,
@@ -120,7 +120,7 @@ export default function CodeEditorPage() {
   // 파일 추가 함수
   const handleAddFile = async (folderId, file_name, language) => {
     try {
-      const { status, file_id } = await addFile(
+      const { status } = await addFile(
         team_id,
         quest_id,
         folderId,
@@ -138,14 +138,14 @@ export default function CodeEditorPage() {
   };
   const handleQuestState = async () => {
     try {
-      const success = await updateQuestState(team_id, quest_id);
+      const success = await updateQuestState(team_id, quest_id, true);
       console.log(success);
     } catch (error) {}
   };
 
   // 파일 내용 수정 함수
   const handleEditFile = async ({
-    code_content = selectedFile.code,
+    code_context = selectedFile.code,
     file_name = selectedFile.file_name,
     language = selectedFile.language,
   }) => {
@@ -158,10 +158,10 @@ export default function CodeEditorPage() {
     }
     console.log(editRef.current);
     if (editRef.current) {
-      code_content = editRef.current.getValue();
+      code_context = editRef.current.getValue();
       language = editRef.current.getLanguage();
     }
-    console.log(code_content, language);
+    console.log(code_context, language);
 
     const { status } = await editFile(
       team_id,
@@ -170,7 +170,7 @@ export default function CodeEditorPage() {
       file_name,
       language,
       selectedFile.file_id,
-      code_content
+      code_context
     );
     if (status === 200) {
       setFetchUpdate(!fetchUpdate);
