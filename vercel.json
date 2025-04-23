@@ -2,21 +2,24 @@
   "version": 2,
   "builds": [
     {
-      "src": "index.html",
+      "src": "dist/**",
       "use": "@vercel/static"
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/(.*)",
-      "destination": "http://43.202.161.69:8080/$1"
+      "handle": "filesystem"
     },
     {
-      "source": "/api/ws(.*)",
-      "destination": "ws://43.202.161.69:8080/ws/chat$1"
+      "src": "/api/ws/(.*)",
+      "dest": "ws://43.202.161.69:8080/ws/$1"
     },
     {
-      "source": "/(.*)",
+      "src": "/api/(.*)",
+      "dest": "http://43.202.161.69:8080/$1"
+    },
+    {
+      "src": "/(.*)",
       "has": [
         {
           "type": "header",
@@ -24,7 +27,7 @@
           "value": "text/html"
         }
       ],
-      "destination": "/index.html"
+      "dest": "/index.html"
     }
   ]
 }
