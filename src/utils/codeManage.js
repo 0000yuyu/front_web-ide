@@ -1,6 +1,6 @@
 import { getHeaders } from './auth';
 
-export async function getCodeList(team_id, quest_id, user_id) {
+export async function getCodeList(quest_id, user_id) {
   const res = await fetch(`/api/code/${quest_id}/${user_id}`, {
     method: 'GET',
     headers: getHeaders(),
