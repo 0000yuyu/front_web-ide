@@ -10,11 +10,11 @@
   "routes": [
     {
       "src": "^/api/(.*)",
-      "dest": "https://your-backend-domain.com/$1"
+      "dest": "http://43.202.161.69:8080/"
     },
     {
       "src": "^/api/ws(.*)",
-      "dest": "wss://your-backend-domain.com/$1"
+      "dest": "ws://43.202.161.69:8080/ws/chat"
     }
   ]
 }
