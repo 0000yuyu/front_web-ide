@@ -3,10 +3,10 @@ let socket = null;
 export const connectChatSocket = (token, onMessage) => {
   if (socket && socket.readyState === WebSocket.OPEN) return;
 
-  socket = new WebSocket(`ws://ws/chat?token=${token}`);
+  socket = new WebSocket(`/api/ws://ws/chat?token=${token}`);
 
   socket.onopen = () => {
-    console.log("🟢 WebSocket 연결됨");
+    console.log('🟢 WebSocket 연결됨');
   };
 
   socket.onmessage = (event) => {
@@ -15,22 +15,22 @@ export const connectChatSocket = (token, onMessage) => {
   };
 
   socket.onerror = (err) => {
-    console.error("❌ WebSocket 에러:", err);
+    console.error('❌ WebSocket 에러:', err);
   };
 
   socket.onclose = () => {
-    console.warn("🟡 WebSocket 연결 종료");
+    console.warn('🟡 WebSocket 연결 종료');
   };
 };
 //메세지 전송
 export const sendMessageToServer = (message) => {
   if (!socket || socket.readyState !== WebSocket.OPEN) {
-    console.warn("❗ WebSocket이 열려있지 않습니다.");
+    console.warn('❗ WebSocket이 열려있지 않습니다.');
     return;
   }
 
   const payload = {
-    type: "message",
+    type: 'message',
     ...message,
   };
 
@@ -51,12 +51,12 @@ export async function searchCahtMessages(teamId, keyword) {
     const res = await fetch(
       `/api/chat/search?teamId=${teamId}&keyword=${encodeURIComponent(keyword)}`
     );
-    if (!res.ok) throw new Error("search false");
+    if (!res.ok) throw new Error('search false');
 
     const data = await res.json();
     return data; // [{nickname, content, timestamp, user_id, team_id}, ...]
   } catch (error) {
-    console.error("chating search error: ", error);
+    console.error('chating search error: ', error);
     return [];
   }
 }
@@ -65,12 +65,12 @@ export async function searchCahtMessages(teamId, keyword) {
 export async function getChatHistory(teamId) {
   try {
     const res = await fetch(`/api/chat/history?teamId=${teamId}`);
-    if (!res.ok) throw new Error("chatHistory false");
+    if (!res.ok) throw new Error('chatHistory false');
 
     const data = await res.json();
     return data; //메세지 배열
   } catch (error) {
-    console.error("chatHistory error: ", error);
+    console.error('chatHistory error: ', error);
     return [];
   }
 }
