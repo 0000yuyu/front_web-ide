@@ -1,11 +1,5 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "dist/**",
-      "use": "@vercel/static"
-    }
-  ],
   "routes": [
     {
       "handle": "filesystem"
@@ -17,17 +11,6 @@
     {
       "src": "/api/(.*)",
       "dest": "http://43.202.161.69:8080/$1"
-    },
-    {
-      "src": "/(.*)",
-      "has": [
-        {
-          "type": "header",
-          "key": "accept",
-          "value": "text/html"
-        }
-      ],
-      "dest": "/index.html"
     }
   ]
 }
