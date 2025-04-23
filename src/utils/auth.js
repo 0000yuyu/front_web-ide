@@ -1,6 +1,6 @@
 // headers.js
 export const getHeaders = () => {
-  const token = localStorage.getItem('token');
+  const token = sessionStorage.getItem('token');
   const headers = {
     'Content-Type': 'application/json',
   };
@@ -14,17 +14,16 @@ export const getHeaders = () => {
 
 // 토큰 저장
 export const saveToken = (token) => {
-  localStorage.setItem('token', token);
+  sessionStorage.setItem('token', token);
 };
 // 토큰 가져오기
 export const getToken = () => {
-  return localStorage.getItem('token');
+  return sessionStorage.getItem('token');
 };
 
 // 토큰 삭제 (로그아웃)
 export const removeToken = () => {
-  localStorage.removeItem('token');
-  localStorage.removeItem('id');
+  sessionStorage.removeItem('token');
 };
 
 // 로그인 여부 확인

@@ -1,112 +1,146 @@
 import { http, HttpResponse } from 'msw';
-import { codeFiles } from '../data/codes';
 import { quests } from '../data/quests';
 
-let folderIdCounter = 1;
-let fileIdCounter = 1;
+let folder_id_counter = 1000;
+let file_id_counter = 1000;
+
+const getCodeFiles = () => {
+  return JSON.parse(localStorage.getItem('code_files') || '{}') || {};
+};
+
+const setCodeFiles = (list) => {
+  return localStorage.setItem('code_files', JSON.stringify(list, null, 2));
+};
 
 export const codeHandlers = [
   // 코드 목록 조회
-  http.get('/code/:teamId/:questId/:userId', ({ params }) => {
-    const { teamId, questId, userId } = params;
-    const key = `${teamId}-${questId}-${userId}`;
-    const structure = codeFiles[key] || [];
+  http.get('/code/:team_id/:quest_id/:user_id', ({ params }) => {
+    const code_files = getCodeFiles();
+    const { team_id, quest_id, user_id } = params;
+    const key = `${team_id}-${quest_id}-${user_id}`;
+    const structure = code_files[key] || [];
 
     return HttpResponse.json(structure);
   }),
 
   // 코드 상태 변경 (퀘스트 완료 처리)
-  http.patch('/code/:teamId/:questId/:userId/status', async ({ request }) => {
-    const { teamId, questId, userId, questStatus } = await request.json();
+  http.patch('/code/status', async ({ request }) => {
+    const { team_id, quest_id, quest_status } = await request.json();
+    console.log(team_id, quest_id, quest_status);
+    const user_id = localStorage.getItem('id');
     const quest = quests.find(
-      (q) => q.teamId === teamId && q.questId === questId
+      (q) => q.team_id == team_id && q.quest_id == quest_id
     );
     if (!quest)
       return HttpResponse.json({ message: '퀘스트 없음' }, { status: 404 });
 
-    const userStatus = quest.incompletedUser.find((u) => u.userId === userId);
-    if (userStatus) {
-      userStatus.isOncomplete = questStatus === 'COMPLETED';
-    }
-
+    const userQuest = quest.quest_user_list.find(
+      (user) => user.user_id == user_id
+    );
+    if (userQuest) userQuest.status = quest_status;
     return HttpResponse.json({ success: true });
   }),
 
   // 코드 실행 (mock 실행기)
   http.post('/code/run', async ({ request }) => {
-    const { codeContext, language } = await request.json();
-    // 임시 출력값 생성
-    const fakeOutput = codeContext.includes('print')
-      ? 'Hello\n' + language
-      : 'No output';
-    return HttpResponse.json({ output: fakeOutput });
+    const { code_context, language } = await request.json();
+    const fake_output = code_context.includes('print')
+      ? 'Hello ' + language
+      : 'hi  ' + language;
+    return HttpResponse.json({ output: fake_output });
   }),
 
   // 폴더 추가
-  http.post(
-    '/code/:teamId/:questId/:userId/folder',
-    async ({ params, request }) => {
-      const { teamId, questId, userId } = params;
-      const { folderName } = await request.json();
-      const key = `${teamId}-${questId}-${userId}`;
+  http.post('/code/folder', async ({ request }) => {
+    const { team_id, quest_id, parent_id, folder_name } = await request.json();
+    const user_id = localStorage.getItem('id');
+    const key = `${team_id}-${quest_id}-${user_id}`;
 
-      const folder = { folderId: folderIdCounter++, folderName, files: [] };
-      if (!codeFiles[key]) codeFiles[key] = [];
-      codeFiles[key].push(folder);
+    const code_files = getCodeFiles();
 
-      return HttpResponse.json({ folderId: folder.folderId });
-    }
-  ),
+    const folder = {
+      folder_id: folder_id_counter++,
+      parent_id: parent_id ?? null,
+      folder_name,
+      files: [],
+    };
+
+    if (!code_files[key]) code_files[key] = [];
+    code_files[key].push(folder);
+    console.log(code_files);
+
+    setCodeFiles(code_files);
+    localStorage.setItem('test', JSON.stringify(['2']));
+    console.log(code_files);
+    localStorage.setItem('code_files', JSON.stringify(code_files));
+    return HttpResponse.json({ folder_id: folder.folder_id });
+  }),
 
   // 파일 추가
-  http.post(
-    '/code/:teamId/:questId/:userId/file',
-    async ({ params, request }) => {
-      const { teamId, questId, userId } = params;
-      const { folderId, fileName, language } = await request.json();
-      const key = `${teamId}-${questId}-${userId}`;
+  http.post('/code/file', async ({ request }) => {
+    const { team_id, quest_id, folder_id, language, file_name } =
+      await request.json();
+    const user_id = localStorage.getItem('id');
+    const key = `${team_id}-${quest_id}-${user_id}`;
+    const code_files = getCodeFiles();
 
-      const newFile = {
-        fileId: fileIdCounter++,
-        fileName,
-        language,
-        code: '',
+    const new_file = {
+      file_id: file_id_counter++,
+      file_name,
+      language,
+      code: '',
+    };
+    console.log(file_id_counter);
+
+    if (!code_files[key]) code_files[key] = [];
+
+    let folder = code_files[key].find((f) => f.folder_id === folder_id);
+
+    // fallback to a default folder if not found
+    if (!folder) {
+      folder = {
+        folder_id,
+        parent_id: null,
+        folder_name: 'Untitled',
+        files: [],
       };
-
-      if (!codeFiles[key]) codeFiles[key] = [];
-
-      if (folderId == null) {
-        // 루트 파일
-        const rootFolder = codeFiles[key].find((f) => f.folderId === null);
-        if (rootFolder) {
-          rootFolder.files.push(newFile);
-        } else {
-          codeFiles[key].push({
-            folderId: null,
-            folderName: null,
-            files: [newFile],
-          });
-        }
-      } else {
-        const targetFolder = codeFiles[key].find(
-          (f) => f.folderId === folderId
-        );
-        if (targetFolder) targetFolder.files.push(newFile);
-      }
-
-      return HttpResponse.json({ fileId: newFile.fileId });
+      code_files[key].push(folder);
     }
-  ),
+    folder.files.push(new_file);
+    setCodeFiles(code_files);
+
+    return HttpResponse.json({ file_id: new_file.file_id });
+  }),
 
   // 코드 파일 편집
-  http.put('/code/:teamId/:questId/:userId', async ({ params, request }) => {
-    const { teamId, questId, userId } = params;
-    const { folderId, fileId, codeContent } = await request.json();
-    const key = `${teamId}-${questId}-${userId}`;
+  http.put('/code', async ({ request }) => {
+    const {
+      team_id,
+      quest_id,
+      folder_id,
+      file_name,
+      file_id,
+      code_content,
+      language,
+    } = await request.json();
+    const user_id = localStorage.getItem('id');
+    const code_files = getCodeFiles();
+    const key = `${team_id}-${quest_id}-${user_id}`;
+    console.log(code_files);
+    console.log(code_files[key]);
+    console.log(folder_id);
 
-    const folder = codeFiles[key]?.find((f) => f.folderId === folderId);
-    const file = folder?.files.find((f) => f.fileId === fileId);
-    if (file) file.code = codeContent;
+    const folder = code_files[key]?.find((f) => f.folder_id === folder_id);
+    console.log(folder);
+    const file = folder?.files.find((f) => f.file_id === file_id);
+
+    if (file) {
+      file.file_name = file_name;
+      file.code = code_content;
+      file.language = language;
+    }
+    console.log(file);
+    setCodeFiles(code_files);
 
     return HttpResponse.json({ success: true });
   }),

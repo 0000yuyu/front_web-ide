@@ -24,7 +24,6 @@ export default function TeamListPage() {
 
   useEffect(() => {
     fetchGroupList();
-    console.log('실행 왜 안돼');
   }, [tier]);
 
   async function fetchGroupList() {
