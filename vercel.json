@@ -4,10 +4,6 @@
     {
       "src": "index.html",
       "use": "@vercel/static"
-    },
-    {
-      "src": "src/**/*.[js,jsx]",
-      "use": "@vercel/static"
     }
   ],
   "rewrites": [
@@ -21,6 +17,13 @@
     },
     {
       "source": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "accept",
+          "value": "text/html"
+        }
+      ],
       "destination": "/index.html"
     }
   ]
