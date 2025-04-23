@@ -1,6 +1,7 @@
+import { userDataStore } from "@/store/userDataStore";
 import { checkIdDuplicate, membership } from "@/utils/userManage";
 import React, { useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Form({ children }) {
   return (
@@ -113,7 +114,6 @@ export default function MembershipPage() {
   const emailRef = useRef(null);
 
   const handleCheckId = async () => {
-    // 아이디 중복 확인 로직을 처리하는 함수입니다.
     try {
       if (!id)
         setMessages((prev) => ({
@@ -128,7 +128,7 @@ export default function MembershipPage() {
         }));
       } else throw new Error("사용중");
     } catch (error) {
-      alert("사용할 수 없는 아이디\n=" + error.message); // 오류가 발생하면 사용할 수 없는 아이디라는 메시지를 표시합니다.
+      alert("사용할 수 없는 아이디\n=" + error.message);
     }
   };
 

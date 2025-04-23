@@ -1,46 +1,59 @@
 import React, { useState, useEffect } from "react";
-import { io } from "socket.io-client";
+import {
+  connectChatSocket,
+  sendMessageToServer,
+  disconnectChatSocket,
+} from "@/utils/chatManage";
 
 export default function ChatBox() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [socket, setSocket] = useState(null);
+
+  const user = {
+    token: "your_access_token_here",
+    user_id: "user123",
+    nickname: "코딩짱",
+    team_id: "31",
+  };
 
   useEffect(() => {
-    const newSocket = io();
-    setSocket(newSocket);
-
-    newSocket.on("chat message", (msg) => {
+    connectChatSocket.on("chat message", (msg) => {
       setMessages((prevMessages) => [...prevMessages, msg]);
     });
 
     return () => {
-      newSocket.disconnect();
+      disconnectChatSocket();
     };
   }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (input.trim() !== "") {
-      socket.emit("chat message", input);
-      setInput("");
-    }
+    if (!input.trim()) return;
+    sendMessageToServer({
+      user_id: user.user_id,
+      nickname: user.nickname,
+      contet: input,
+      team_id: user.team_id,
+    });
+    setInput("");
   };
 
   return (
-    <div className="w-80 border rounded-xl p-3 bg-white flex flex-col justify-between h-[90vh]">
+    <div className="mt-8 w-80 border p-3 bg-white flex flex-col justify-between h-[90vh]">
       <h2 className="text-lg font-semibold mb-2">CHAT</h2>
 
-      <input
-        type="text"
-        placeholder="아이디를 검색하세요"
-        className="w-full px-3 py-1 border rounded mb-2 text-sm"
-      />
+      <div className="px-2">
+        <input
+          type="text"
+          placeholder="아이디를 검색하세요"
+          className="w-full px-3 py-1 border rounded text-sm "
+        />
+      </div>
 
       <div className="flex-1 overflow-y-auto space-y-4 mb-2">
-        {messages.map((msg, i) => (
+        {messages.map((msg, idx) => (
           <div
-            key={i}
+            key={idx}
             className={`flex items-start gap-2 ${
               msg.nickname === "나" ? "justify-end" : ""
             }`}

@@ -137,8 +137,8 @@ export default function TeamMainPage() {
               <h2 className="font-semibold">{quest.quest_name}</h2>
               {quest.status}
               <Link
-                to={`/quest/${team_id}/${quest.quest_name}`}
-                className="text-white text-sm px-2 py-1 rounded bg-[#2D336B]"
+                to={`/team/${team.teamId}`}
+                className="bg-base2 text-white py-1 px-4"
               >
                 이동
               </Link>
