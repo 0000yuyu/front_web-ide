@@ -27,6 +27,7 @@ function FileExplorer({
   }, [selectedFile, selectedFolder]);
 
   const toggleFolder = (folderId) => {
+    if (expandedFolders[folderId]) onFolderSelect(0);
     setExpandedFolders((prev) => ({
       ...prev,
       [folderId]: !prev[folderId],
@@ -217,10 +218,22 @@ function FileExplorer({
       <div className='flex justify-between'>
         <h2 className='text-lg font-semibold mb-2'>내 파일</h2>
         <div className='flex gap-2'>
-          <button className='z-10' onClick={() => setAddFile(true)}>
+          <button
+            className='z-10'
+            onClick={() => {
+              setAddFile(true);
+              onFolderSelect(0);
+            }}
+          >
             <FaFileMedical />
           </button>
-          <button onClick={() => setAddFolder(true)}>
+          <button
+            className='z-10'
+            onClick={() => {
+              setAddFolder(true);
+              onFolderSelect(0);
+            }}
+          >
             <FaFolderPlus />
           </button>
         </div>
