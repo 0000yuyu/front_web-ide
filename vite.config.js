@@ -22,17 +22,17 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/api': {
-        target: 'http://43.202.161.69:8080/',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
-        // 백엔드 서버에는 /api 빼고 전달
-      },
       '/api/ws': {
         target: 'ws://43.202.161.69:8080/ws/chat', // 웹소켓은 ws://
         ws: true,
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+      '/api': {
+        target: 'http://43.202.161.69:8080/',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+        // 백엔드 서버에는 /api 빼고 전달
       },
     },
   },
