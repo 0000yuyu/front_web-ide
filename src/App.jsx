@@ -17,15 +17,15 @@ import CodeEditorPage from './pages/CodeEditorPage';
 import TeamListPage from './pages/TeamListPage';
 import TeamMainPage from './pages/TeamMainPage';
 import QuestPage from './pages/QuestPage';
+import SideBar from './components/SideBar';
 
 export default function App() {
   const { team_id } = userDataStore();
   return (
     <Routes>
       <Route path='/' element={<AppLayout />}>
-        <Route index element={<IndexPage />} />
         <Route
-          path='intro'
+          index
           element={
             isLoggedIn() ? (
               <Navigate to={`/team/${team_id}`} replace />
@@ -40,7 +40,7 @@ export default function App() {
         <Route path='find-password' element={<FindPasswordPage />} />
         <Route path='intro' element={<IntroPage />} />
         <Route path='groups' element={<TeamListPage />} />
-        <Route path='team' element={<TeamMainPage />} />
+        <Route path='team/:team_id' element={<TeamMainPage />} />
         <Route path='quest/:team_id/:quest_id' element={<QuestPage />} />
         <Route
           path='code/:team_id/:quest_id/:user_id'

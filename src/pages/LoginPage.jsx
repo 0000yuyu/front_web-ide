@@ -109,7 +109,7 @@ export default function LoginPage() {
   const [messages, setMessages] = useState({ id: '', password: '' });
   const idRef = useRef(null);
   const passwordRef = useRef(null);
-
+  const [modal_open, set_modal_open] = useState(false);
   const handleLogin = async () => {
     const newMessages = { id: null, password: null };
     let hasError = false;
@@ -143,11 +143,17 @@ export default function LoginPage() {
         setUserProfile(userData);
         navigate('/');
       } else {
-        alert('아이디 또는 비밀번호가 올바르지 않습니다.');
+        set_modal_open(true);
+        newMessages.submit = {
+          type: 'error',
+          text: '아이디 또는 비밀번호를 확인해주세요',
+        };
       }
     } catch (error) {
-      console.error('로그인 중 오류 발생:', error);
-      alert('로그인 중 오류가 발생했습니다.');
+      newMessages.submit = {
+        type: 'error',
+        text: '로그인 중 에러가 발생하였습니다.' + error,
+      };
     }
   };
 

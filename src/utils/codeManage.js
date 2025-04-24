@@ -9,7 +9,7 @@ export async function getCodeList(quest_id, user_id) {
   return data ?? [];
 }
 
-export async function addFolder(team_id, quest_id, parent_id, folder_name) {
+export async function addFolder({ team_id, quest_id, parent_id, folder_name }) {
   try {
     const res = await fetch(`/api/code/${team_id}/${quest_id}/folder`, {
       method: 'POST',
@@ -28,13 +28,13 @@ export async function addFolder(team_id, quest_id, parent_id, folder_name) {
   }
 }
 
-export async function addFile(
+export async function addFile({
   team_id,
   quest_id,
   folder_id,
   file_name,
-  language
-) {
+  language,
+}) {
   try {
     const res = await fetch(`/api/code/${team_id}/${quest_id}/file`, {
       method: 'POST',
@@ -52,35 +52,25 @@ export async function addFile(
   }
 }
 
-export async function editFile(
+export async function editFile({
   team_id,
   quest_id,
   folder_id,
   file_name,
   language,
   file_id,
-  code_content
-) {
-  console.log(
-    team_id,
-    quest_id,
-    folder_id,
-    file_name,
-    language,
-    file_id,
-    code_content
-  );
-  const res = await fetch(`/api/code`, {
+  context,
+}) {
+  console.log(team_id, quest_id, file_name, language, file_id, context);
+  const res = await fetch(`/api/code/${team_id}/${quest_id}`, {
     method: 'PUT',
     headers: getHeaders(),
     body: JSON.stringify({
-      team_id,
-      quest_id,
       language,
-      folder_id,
       file_id,
+      folder_id,
       file_name,
-      code_content,
+      context,
     }),
   });
   const data = await res.json();
@@ -98,4 +88,16 @@ export async function runCode(code_content, language) {
   });
   const data = await res.json();
   return { status: res.status, ...data };
+}
+
+// 문제 접근 확인
+export async function accessCode(team_id, quest_id, user_id) {
+  const response = await fetch(
+    `/api/quest/access/${team_id}/${quest_id}/${user_id}`,
+    {
+      headers: getHeaders(),
+    }
+  );
+  const data = await response.json();
+  return data.accessible;
 }

@@ -1,24 +1,38 @@
 import { userDataStore } from '@/store/userDataStore';
 import { isLoggedIn } from '@/utils/auth';
 import { logout } from '@/utils/userManage';
-import React from 'react';
+import React, { useState } from 'react';
+import { PiMedalMilitaryDuotone } from 'react-icons/pi';
 import { Link } from 'react-router-dom';
+import { LuMenu } from 'react-icons/lu';
+import SideBar from './SideBar';
+import Modal from './Modal';
 
 export default function Header() {
   const isLogged = isLoggedIn();
+  const [menuOpen, setMenuOpen] = useState(false);
   const { userid, nickname, tier, email, resetUserProfile } = userDataStore();
 
   return (
     <div>
-      <header className='bg-[#A9B5DF] text-black px-6 py-4 flex justify-between items-center rounded-b-lg'>
-        <Link to={'/'} className='text-2xl font-bold'>
-          AlgoMento
-        </Link>
-        {isLogged ? (
-          <div className='flex gap-3'>
-            <span className='border rounded-[50%]'>{tier}</span>
-            <span>{nickname}</span>
+      <header
+        className='bg-base3 text-black px-6 
+      py-4 flex justify-between items-center'
+      >
+        <div className='flex items-center gap-3 text-xl'>
+          <LuMenu
+            onClick={(e) => {
+              e.stopPropagation();
+              setMenuOpen(!menuOpen);
+            }}
+          />
+          <Link to={'/'} className='text-xl font-bold'>
+            AlgoMento
+          </Link>
+        </div>
 
+        {isLogged ? (
+          <div className='flex gap-3 items-center'>
             <button
               onClick={() => {
                 logout();
@@ -40,6 +54,7 @@ export default function Header() {
           </div>
         )}
       </header>
+      {menuOpen && <SideBar />}
     </div>
   );
 }
