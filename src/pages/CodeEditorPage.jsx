@@ -6,12 +6,11 @@ import {
   getCodeList,
   runCode,
   editFile,
-  updateQuestState,
-  getQuest,
 } from '@/utils/codeManage';
 import CodeEditor from '@/components/CodeEidtor';
 import FileExplorer from '@/components/FileExplorer';
 import OutputConsole from '@/components/OutputConsole';
+import { getQuest } from '@/utils/questDetailManage';
 
 export default function CodeEditorPage() {
   const { team_id, quest_id, user_id } = useParams();
@@ -22,6 +21,7 @@ export default function CodeEditorPage() {
   const [isExcute, setExcute] = useState(false);
   const [output, setOutput] = useState('');
   const [quest, setQuest] = useState(null);
+  const [root_folder, setRootFolder] = useState({});
   const editRef = useRef(null);
 
   useEffect(() => {
@@ -31,24 +31,30 @@ export default function CodeEditorPage() {
 
   async function fetchQuest() {
     try {
-      const data = await getQuest(team_id, quest_id);
-      console.log(data);
-      setQuest(data);
-    } catch (error) {}
+      const questData = await getQuest(team_id, quest_id);
+      console.log(questData); // 가져온 데이터를 콘솔에 로그로 출력합니다.
+      setQuest(questData); // 가져온 데이터를 상태에 저장합니다.
+    } catch (error) {
+      console.log(error); // 오류가 발생하면 콘솔에 로그로 출력합니다.
+    }
   }
-
-  // 폴더 구조를 가져와서 트리 구조로 변환ab
+  // 폴더 구조를 가져와서 트리 구조로 변환
   async function fetchFolderStructure() {
     try {
       const flatStructure = await getCodeList(quest_id, user_id);
-      console.log(flatStructure.length);
-      if (flatStructure.length == 0) {
-        console.log('실행');
-        return await handleAddFolder(null, 'root');
+      const root_folder = flatStructure.find(
+        (folder) => folder.folder_name == 'root-' + user_id
+      );
+      console.log(flatStructure);
+      if (root_folder) {
+        const nestedStructure = buildNestedStructure(flatStructure);
+        setRootFolder(root_folder);
+        setFolderStructure(nestedStructure);
+      } else {
+        const { folder_id } = await handleAddFolder(null, 'root-' + user_id);
+        console.log(folder_id);
+        await handleAddFile(folder_id, 'answer.py', 'python3');
       }
-
-      const nestedStructure = buildNestedStructure(flatStructure);
-      setFolderStructure(nestedStructure);
     } catch (error) {
       console.error('폴더 구조를 가져오는 데 실패했습니다:', error);
     }
@@ -99,16 +105,17 @@ export default function CodeEditorPage() {
     setFetchUpdate(!fetchUpdate);
   };
   // 폴더 추가 함수
-  const handleAddFolder = async (parent_id, folder_name) => {
+  const handleAddFolder = async (parent_id = null, folder_name) => {
     try {
-      const { status } = await addFolder(
+      const response = await addFolder(
         team_id,
         quest_id,
         parent_id,
         folder_name
       );
-      if (status === 200) {
-        setFetchUpdate(!fetchUpdate);
+      console.log(response);
+      if (response.status === 200) {
+        return response;
       } else {
         console.error('폴더 추가 실패');
       }
@@ -119,6 +126,7 @@ export default function CodeEditorPage() {
 
   // 파일 추가 함수
   const handleAddFile = async (folderId, file_name, language) => {
+    console.log(folderId, file_name, language);
     try {
       const { status } = await addFile(
         team_id,
@@ -182,7 +190,7 @@ export default function CodeEditorPage() {
   return (
     <div className='w-screen h-screen flex flex-col bg-code text-transparent2'>
       <div className='flex justify-between p-2'>
-        <span className='text-2xl'>{quest?.quest_name}</span>
+        <span className='text-xl'>문제 : {quest?.quest_name}</span>
         <button
           className='bg-transparent1 p-2 rounded-lg text-white'
           onClick={handleQuestState}
@@ -194,6 +202,7 @@ export default function CodeEditorPage() {
       <div className='flex flex-grow w-full '>
         <div className='min-w-[350px] h-full'>
           <FileExplorer
+            root_folder={root_folder}
             folderStructure={folderStructure}
             onFileSelect={handleFileSelect}
             onFolderSelect={setSelectedFolder}
