@@ -12,8 +12,16 @@ function CodeEditor({
   const [language, setLanguage] = useState(selectedFile.language);
   const [code_content, setCodeContent] = useState(selectedFile.code);
 
+  // selectedFile이 변경될 때 code_content를 동기화
+  useEffect(() => {
+    console.log('바뀜');
+    console.log(selectedFile);
+    setCodeContent(selectedFile.code_context ?? '');
+    setLanguage(selectedFile.language);
+  }, [selectedFile]);
+
   return (
-    <div className='p-2 flex h-full  flex-col bg-code'>
+    <div className='p-2 flex h-full flex-col bg-code'>
       <div className='flex items-center justify-between mb-2 p-2 bg-code'>
         <h2 className='text-[#ABB2BF] flex gap-2 bg-transparent3 border p-[5px] px-5 rounded-lg'>
           <span className=''>{selectedFile.file_name || '새 파일'}</span>
@@ -47,7 +55,10 @@ function CodeEditor({
           </div>
           <div className='flex gap-2'>
             <button
-              onClick={() => onEditFile()}
+              onClick={() => {
+                console.log(selectedFile);
+                onEditFile();
+              }}
               className='bg-transparent2 text-black rounded p-2 text-sm'
             >
               저장
@@ -58,10 +69,10 @@ function CodeEditor({
       <div className='border h-full rounded overflow-hidden border-[#383E4A]'>
         <Editor
           className='h-[500px] text-[#ABB2BF]'
-          language={language == 'python3' ? 'python' : language}
-          value={selectedFile.code}
+          language={language === 'python3' ? 'python' : language}
+          value={code_content} // code_content 상태를 value로 사용
           onMount={onEditorMount}
-          onChange={setCodeContent}
+          onChange={setCodeContent} // 에디터 내용이 변경될 때 code_content 업데이트
           options={{
             fontSize: 20,
             minimap: { enabled: false },

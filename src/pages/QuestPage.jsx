@@ -1,5 +1,11 @@
 // 퀘스트 관리 함수를 가져옵니다.
-import { getQuest, getTeamMembers } from '@/utils/questDetailManage';
+import { accessCode } from '@/utils/codeManage';
+import {
+  getQuest,
+  getQuestStates,
+  getTeamMembers,
+  submitQuest,
+} from '@/utils/questDetailManage';
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
@@ -25,30 +31,36 @@ export default function QuestPage() {
       console.log(error); // 오류가 발생하면 콘솔에 로그로 출력합니다.
     }
   }
+  async function submitTeamQuest() {
+    try {
+      const response = await submitQuest(quest_id);
+    } catch (error) {
+      console.log(error);
+    }
+  }
   async function getTeamMembersWithStatus() {
-    const members = await getTeamMembers(team_id);
-    setMembers(members);
-    console.log(members);
-    // const membersWithStatus = await Promise.all(
-    //   members.map(async (member) => {
-    //     const res = await fetch(`/api/member-status/${member.id}`);
-    //     const data = await res.json();
-    //     return {
-    //       ...member,
-    //       completed: data.completed, // 예시 필드
-    //     };
-    //   })
-    // );
+    const members = await getQuestStates(team_id, quest_id);
+    const membersWithStatus = await Promise.all(
+      members.map(async (member) => {
+        const accessible = await accessCode(team_id, quest_id, member.userId);
+        return {
+          ...member,
+          accessible, // 예시 필드
+        };
+      })
+    );
+    console.log(membersWithStatus);
+    setMembers(membersWithStatus);
   }
 
   // 완료된 인원
   // 퀘스트에 완료된 사용자의 수를 계산합니다.
-  const totalScore = quest.questUserList?.filter((user) => user.status).length;
+  const totalScore = members?.filter((user) => user.isCompleted).length;
 
   return (
     <div>
-      <div className='flex items-start justify-stretch bg-[#f9f9f9]'>
-        <div className='flex-1 p-6 pt-0 min-h-screen justify-items-stretch'>
+      <div className='flex items-start'>
+        <div className='flex-1 p-6 pt-0 justify-items-stretch'>
           <div>
             <div className='text-3xl font-bold mt-6 mb-4'>
               {quest.quest_id}번
@@ -85,26 +97,33 @@ export default function QuestPage() {
           </div>
           <div className='w-full max-w-full p-6'>
             <p className='text-lg font-semibold mb-4 border-b'>
-              제출인원: / {members.length}
+              제출인원: {totalScore} / {members.length}
             </p>
             <div className='grid grid-cols-2 gap-3'>
               {members.map((member) => (
-                <Link to={`/code/${team_id}/${quest_id}/${member.user_id}`}>
-                  <label
-                    key={member.user_id}
-                    className='flex items-center gap-2 px-3 py-2'
-                  >
-                    <input
-                      className={`w-5 h-5 rounded-md
+                <label
+                  key={member.userId}
+                  className='flex items-center gap-2 px-3 py-2'
+                >
+                  <input
+                    className={`w-5 h-5 rounded-md
                       ${
                         member.status
                           ? 'bg-gray-900 accent-white'
                           : 'border border-gray-300 bg-white'
                       }
                     `}
-                      type='checkbox'
-                      checked={member.status}
-                    />
+                    type='checkbox'
+                    checked={member.isCompleted}
+                    onChange={async (e) => {
+                      e.stopPropagation();
+                      if (!member.isCompleted && member.accessible) {
+                        alert('코드 수정을 시작하시겠습니까?');
+                        await submitTeamQuest();
+                      }
+                    }}
+                  />
+                  <Link to={`/code/${team_id}/${quest_id}/${member.userId}`}>
                     <span
                       className={`w-full text-sm rounded-lg px-3 py-2 outline-none border 
           ${
@@ -116,8 +135,8 @@ export default function QuestPage() {
                     >
                       {member.nickname}
                     </span>
-                  </label>
-                </Link>
+                  </Link>
+                </label>
               ))}
             </div>
           </div>

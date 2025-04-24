@@ -38,15 +38,30 @@ export async function getQuest(team_id, quest_id) {
   }
 }
 // 퀘스트 상태를 업데이트하는 비동기 함수
-export async function updateQuestState(teamId, questId) {
+export async function getQuestStates(team_id, quest_id) {
   // 서버에 POST 요청을 보내 퀘스트 상태 변경
-  const response = await fetch(`/api/quest/${teamId}/${questId}/status`, {
-    method: 'POST',
+  const response = await fetch(`/api/quest/status/${team_id}/${quest_id}`, {
+    method: 'GET',
     headers: getHeaders(),
   });
   // 요청 성공 여부에 따라 boolean 값 반환
-  if (response.ok) return true;
-  else return false;
+  if (response.ok) return await response.json();
+  else return [];
+}
+export async function submitQuest(quest_id) {
+  // 서버에 POST 요청을 보내 퀘스트 상태 변경
+  console.log(quest_id);
+  const response = await fetch(`/api/submission`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify({
+      quest_id,
+      is_completed: true,
+    }),
+  });
+  // 요청 성공 여부에 따라 boolean 값 반환
+  if (response.ok) return response;
+  else return [];
 }
 // 새로운 퀘스트를 생성하는 비동기 함수
 export async function createQuest(form) {
