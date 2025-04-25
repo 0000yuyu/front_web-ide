@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   connectChatSocket,
   sendMessageToServer,
@@ -16,40 +16,32 @@ export default function ChatBox() {
   const [keyword, setKeyword] = useState("");
   const [results, setResults] = useState([]);
   const { teamId, nickname, userId } = userDataStore();
-  //chat history
-  const socketRef = useRef(null);
 
   const user = {
-    token: "your_access_token_here",
-    user_id: "",
-    nickname: "",
-    team_id: "",
+    user_id: userId,
+    nickname: nickname,
+    team_id: teamId,
   };
-  // 1. 채팅 내역 + webSocket 연결
+
   useEffect(() => {
+    if (!teamId) return;
+    // 1. 채팅 내역 + webSocket 연결
     async function initChat() {
-      //1-1. 과거 채팅 기록 불러오기
-      const history = await getChatHistory(teamId);
-      setMessages(history);
+      try {
+        const history = await getChatHistory(teamId);
+        setMessages(history);
 
-      //1-2. WebSocket 연결 및 메세지 수신
-      const socket = connectChatSocket(teamId);
-      socketRef.current = socket;
-
-      socket.onopen = () => console.log("socket on");
-      socket.onerror = (e) => console.error("socket error", e);
-      socket.onclose = () => console.log("socket off");
-
-      // 3. 실시간 메시지 수신
-      socket.onmessage = (event) => {
-        const msg = JSON.parse(event.data);
-        setMessages((prevMessages) => [...prevMessages, msg]);
-      };
+        connectChatSocket(teamId, (msg) => {
+          setMessages((prev) => [...prev, msg]);
+        });
+      } catch (err) {
+        console.error("초기 채팅 로딩 실패:", err);
+      }
     }
     initChat();
 
     return () => {
-      disconnectChatSocket(socketRef.current);
+      disconnectChatSocket();
     };
   }, [teamId]);
 
@@ -57,7 +49,7 @@ export default function ChatBox() {
     e.preventDefault();
     if (!input.trim()) return;
 
-    sendMessageToServer(socketRef.current, {
+    sendMessageToServer({
       user_id: user.user_id,
       nickname: user.nickname,
       content: input,
@@ -91,7 +83,7 @@ export default function ChatBox() {
             검색
           </button>
         </div>
-        {results.length > 0 ? (
+        {results.length > 0 && (
           <div className="mt-4 text-sm bg-yellow-50 p-2 rounded max-h-40 overflow-y-auto border border-yellow-200">
             <p className="text-xs text-yellow-800 font-semibold mb-1">
               🔍 검색 결과
@@ -102,7 +94,7 @@ export default function ChatBox() {
               </p>
             ))}
           </div>
-        ) : null}
+        )}
       </div>
 
       {/*메세지 리스트*/}

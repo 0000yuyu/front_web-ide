@@ -1,26 +1,28 @@
-import { getHeaders } from "./auth";
+import { getHeaders } from './auth';
 
-export async function getCodeList(team_id, quest_id, user_id) {
-  const res = await fetch(`/code/${team_id}/${quest_id}/${user_id}`, {
-    method: "GET",
+export async function getCodeList(quest_id, user_id) {
+  const res = await fetch(`/api/code/${quest_id}/${user_id}`, {
+    method: 'GET',
     headers: getHeaders(),
   });
   const data = await res.json();
   return data ?? [];
 }
 
-export async function addFolder(team_id, quest_id, parent_id, folder_name) {
+export async function addFolder({ team_id, quest_id, parent_id, folder_name }) {
   try {
-    const res = await fetch(`/code/folder`, {
-      method: "POST",
+    console.log(team_id, quest_id, parent_id, folder_name);
+    const res = await fetch(`/api/code/${team_id}/${quest_id}/folder`, {
+      method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify({
         team_id,
         quest_id,
-        parent_id,
+        parent_id: parent_id == -1 ? null : parent_id,
         folder_name,
       }),
     });
+    console.log(res);
     const data = await res.json();
     return { status: res.status, ...data };
   } catch (error) {
@@ -28,21 +30,20 @@ export async function addFolder(team_id, quest_id, parent_id, folder_name) {
   }
 }
 
-export async function addFile(
+export async function addFile({
   team_id,
   quest_id,
   folder_id,
   file_name,
-  language
-) {
+  language,
+}) {
   try {
-    const res = await fetch(`/code/file`, {
-      method: "POST",
+    console.log('파일 추가', team_id, quest_id, folder_id);
+    const res = await fetch(`/api/code/${team_id}/${quest_id}/file`, {
+      method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify({
-        team_id,
-        quest_id,
-        folder_id,
+        folder_id: folder_id == -1 ? null : folder_id,
         file_name,
         language,
       }),
@@ -54,35 +55,24 @@ export async function addFile(
   }
 }
 
-export async function editFile(
+export async function editFile({
   team_id,
   quest_id,
   folder_id,
   file_name,
   language,
   file_id,
-  code_content
-) {
-  console.log(
-    team_id,
-    quest_id,
-    folder_id,
-    file_name,
-    language,
-    file_id,
-    code_content
-  );
-  const res = await fetch(`/code`, {
-    method: "PUT",
+  code_context,
+}) {
+  console.log(team_id, quest_id, file_name, language, file_id, code_context);
+  const res = await fetch(`/api/code/${team_id}/${quest_id}`, {
+    method: 'PUT',
     headers: getHeaders(),
     body: JSON.stringify({
-      team_id,
-      quest_id,
-      language,
-      folder_id,
       file_id,
+      folder_id,
       file_name,
-      code_content,
+      code_context,
     }),
   });
   const data = await res.json();
@@ -90,8 +80,8 @@ export async function editFile(
 }
 
 export async function runCode(code_content, language) {
-  const res = await fetch("/code/run", {
-    method: "POST",
+  const res = await fetch('/api/code/run', {
+    method: 'POST',
     headers: getHeaders(),
     body: JSON.stringify({
       code_context: code_content,
@@ -101,32 +91,15 @@ export async function runCode(code_content, language) {
   const data = await res.json();
   return { status: res.status, ...data };
 }
-export async function updateQuestState(
-  team_id,
-  quest_id,
-  status = "COMPLETED"
-) {
-  const response = await fetch(`/code/status`, {
-    method: "PATCH",
-    headers: getHeaders(),
-    body: JSON.stringify({
-      team_id,
-      quest_id,
-      quest_status: status,
-    }),
-  });
-  if (response.ok) return true;
-  else return false;
-}
-export async function getQuest(team_id, quest_id) {
-  try {
-    const response = await fetch(`/quest/${team_id}/${quest_id}`, {
-      method: "GET",
-      headers: getHeaders,
-    });
-    const dataArray = await response.json();
-    return dataArray;
-  } catch (error) {
-    console.log(error);
-  }
+
+// 문제 접근 확인
+export async function accessCode(team_id, quest_id, user_id) {
+  const response = await fetch(
+    `/api/quest/access/${team_id}/${quest_id}/${user_id}`,
+    {
+      headers: getHeaders(),
+    }
+  );
+  const data = await response.json();
+  return data.accessible;
 }

@@ -1,10 +1,10 @@
 import { getHeaders } from './auth';
 
 // 특정 팀의 퀘스트 목록을 가져오는 비동기 함수
-export async function getQuestList(teamId) {
+export async function getTeamMembers(team_id) {
   try {
-    // 서버에 GET 요청을 보내 해당 팀의 퀘스트 목록 조회
-    const response = await fetch(`/api/quest/${teamId}`, {
+    // 팀원 목록 조회
+    const response = await fetch(`/api/team/${team_id}/member`, {
       method: 'GET',
       headers: getHeaders(),
     });
@@ -19,10 +19,10 @@ export async function getQuestList(teamId) {
   }
 }
 // 특정 퀘스트의 상세 정보를 가져오는 비동기 함수
-export async function getQuest(teamId, questId) {
+export async function getQuest(team_id, quest_id) {
   try {
     // 서버에 GET 요청을 보내 특정 퀘스트 조회
-    const response = await fetch(`/api/quest/${teamId}/${questId}`, {
+    const response = await fetch(`/api/quest/${team_id}/${quest_id}`, {
       method: 'GET',
       headers: getHeaders(),
     });
@@ -38,15 +38,30 @@ export async function getQuest(teamId, questId) {
   }
 }
 // 퀘스트 상태를 업데이트하는 비동기 함수
-export async function updateQuestState(teamId, questId) {
+export async function getQuestStates(team_id, quest_id) {
   // 서버에 POST 요청을 보내 퀘스트 상태 변경
-  const response = await fetch(`/api/quest/${teamId}/${questId}/status`, {
-    method: 'POST',
+  const response = await fetch(`/api/quest/status/${team_id}/${quest_id}`, {
+    method: 'GET',
     headers: getHeaders(),
   });
   // 요청 성공 여부에 따라 boolean 값 반환
-  if (response.ok) return true;
-  else return false;
+  if (response.ok) return await response.json();
+  else return [];
+}
+export async function submitQuest(quest_id) {
+  // 서버에 POST 요청을 보내 퀘스트 상태 변경
+  console.log(quest_id);
+  const response = await fetch(`/api/submission`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify({
+      quest_id,
+      is_completed: true,
+    }),
+  });
+  // 요청 성공 여부에 따라 boolean 값 반환
+  if (response.ok) return response;
+  else return [];
 }
 // 새로운 퀘스트를 생성하는 비동기 함수
 export async function createQuest(form) {

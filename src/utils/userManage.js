@@ -24,7 +24,8 @@ export async function login(user_id, password) {
 
 export async function membership(user_id, password, nickname, email) {
   try {
-    const response = await fetch('/api/auth/register', {
+    console.log(user_id, password, email, nickname);
+    const response = await fetch('/api/auth/signup', {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify({ user_id, password, nickname, email }),
