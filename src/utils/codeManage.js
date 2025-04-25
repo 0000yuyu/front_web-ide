@@ -11,13 +11,14 @@ export async function getCodeList(quest_id, user_id) {
 
 export async function addFolder({ team_id, quest_id, parent_id, folder_name }) {
   try {
+    console.log(team_id, quest_id, parent_id, folder_name);
     const res = await fetch(`/api/code/${team_id}/${quest_id}/folder`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify({
         team_id,
         quest_id,
-        parent_id,
+        parent_id: parent_id == -1 ? null : parent_id,
         folder_name,
       }),
     });
@@ -36,11 +37,12 @@ export async function addFile({
   language,
 }) {
   try {
+    console.log('파일 추가', team_id, quest_id, folder_id);
     const res = await fetch(`/api/code/${team_id}/${quest_id}/file`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify({
-        folder_id,
+        folder_id: folder_id == -1 ? null : folder_id,
         file_name,
         language,
       }),
