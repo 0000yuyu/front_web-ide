@@ -56,7 +56,7 @@ export async function getTeamMembers(team_id) {
   console.log(team_id);
   try {
     // 서버에 GET 요청을 보내 특정 팀의 멤버 목록 조회
-    const response = await fetch(`/team/${teamId}/member`);
+    const response = await fetch(`/team/${team_id}/member`);
     // 응답 데이터를 JSON으로 파싱
     const data = await response.json();
     // 팀 멤버 목록 반환
@@ -71,7 +71,7 @@ export async function getTeamMembers(team_id) {
 export async function joinTeam(team_id) {
   try {
     // 서버에 POST 요청을 보내 팀 가입
-    const response = await fetch(`/team/${teamId}/join`, {
+    const response = await fetch(`/team/${team_id}/join`, {
       method: 'POST',
       headers,
     });
