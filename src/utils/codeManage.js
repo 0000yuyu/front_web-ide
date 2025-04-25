@@ -22,6 +22,7 @@ export async function addFolder({ team_id, quest_id, parent_id, folder_name }) {
         folder_name,
       }),
     });
+    console.log(res);
     const data = await res.json();
     return { status: res.status, ...data };
   } catch (error) {
@@ -61,18 +62,17 @@ export async function editFile({
   file_name,
   language,
   file_id,
-  context,
+  code_context,
 }) {
-  console.log(team_id, quest_id, file_name, language, file_id, context);
+  console.log(team_id, quest_id, file_name, language, file_id, code_context);
   const res = await fetch(`/api/code/${team_id}/${quest_id}`, {
     method: 'PUT',
     headers: getHeaders(),
     body: JSON.stringify({
-      language,
       file_id,
       folder_id,
       file_name,
-      context,
+      code_context,
     }),
   });
   const data = await res.json();

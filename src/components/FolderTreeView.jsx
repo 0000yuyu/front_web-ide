@@ -8,6 +8,7 @@ function FolderTreeView({
   onFileSelect,
   onFolderSelect,
   getChildrenForFolder,
+  onEditFile,
   onFolderSave,
   onFileSave,
 }) {

@@ -63,10 +63,10 @@ export default function OutputConsole({
   }, [folderStructure, selectedFile]);
 
   return (
-    <div className='flex h-[400px]'>
+    <div className='flex w-full'>
       <div
         ref={terminalRef}
-        className='w-full h-full border border-[#383E4A] bg-[#21252B] text-[#ABB2BF]'
+        className='h-full border border-[#383E4A] bg-[#21252B] text-[#ABB2BF]'
       />
     </div>
   );

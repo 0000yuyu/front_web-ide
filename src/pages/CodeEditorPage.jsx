@@ -64,7 +64,13 @@ export default function CodeEditorPage() {
     try {
       const folders = await getCodeList(quest_id, user_id);
       if (!folders.length) {
-        await handle_add_folder(null, 'root');
+        await handleFileSave({
+          team_id,
+          quest_id,
+          file_name: 'answer.py',
+          language: 'python3',
+          folder_id: null,
+        });
         return;
       }
 
@@ -194,6 +200,8 @@ export default function CodeEditorPage() {
     const model = edit_ref.current?.getModel();
     const monacoLang = model ? model.getLanguageId() : 'unknown';
 
+    console.log(monacoLang);
+
     // Monaco에서 받아온 언어 ID → 시스템에 맞게 변환
     const langMap = {
       python: 'python3',
@@ -204,7 +212,7 @@ export default function CodeEditorPage() {
   };
 
   const handle_edit_file = async ({
-    context = selected_file?.code_context ?? '',
+    code_context = selected_file?.code_context ?? '',
     file_name = selected_file?.file_name ?? '',
     language = selected_file?.language ?? 'python3',
   } = {}) => {
@@ -213,14 +221,15 @@ export default function CodeEditorPage() {
       return;
     }
     if (!selected_file) return;
-    if (language === 'java' && file_name.endsWith('.py')) {
-      file_name = file_name.replace('.py', '.java');
+    //  경로명에 없는 경우 추가
+    if (language === 'java' && !file_name.endsWith('.java')) {
+      file_name = file_name + '.java';
     }
-    if (language === 'python3' && file_name.endsWith('.java')) {
-      file_name = file_name.replace('.java', '.py');
+    if (language === 'python3' && !file_name.endsWith('.py')) {
+      file_name = file_name + '.py';
     }
     if (edit_ref.current) {
-      context = edit_ref.current.getValue();
+      code_context = edit_ref.current.getValue();
       language = getCustomLanguageId();
     }
     console.log(selected_folder);
@@ -233,7 +242,7 @@ export default function CodeEditorPage() {
       file_name,
       language,
       file_id: selected_file.file_id,
-      context,
+      code_context,
     });
     if (status === 200) {
       set_fetch_update(!fetch_update);
@@ -253,9 +262,8 @@ export default function CodeEditorPage() {
           완료
         </button>
       </div>
-
-      <div className='flex flex-grow w-full'>
-        <div className='min-w-[350px] h-full'>
+      <div className='flex w-full h-full'>
+        <div className='flex w-[350px] overflow-y-auto'>
           <FileExplorer
             onFolderSave={handleFolderSave}
             onFileSave={handleFileSave}
@@ -273,17 +281,15 @@ export default function CodeEditorPage() {
         </div>
 
         {selected_file ? (
-          <div className='flex flex-col flex-grow w-full'>
-            <div className='flex-grow'>
-              <CodeEditor
-                selectedFile={selected_file}
-                onEditorMount={handle_editor_mount}
-                onRunCode={handle_run_code}
-                onEditFile={handle_edit_file}
-                onExcuteFile={set_execute}
-                accessible={accessible}
-              />
-            </div>
+          <div className='flex-col flex-1 min-w-0 overflow-hidden'>
+            <CodeEditor
+              selectedFile={selected_file}
+              onEditorMount={handle_editor_mount}
+              onRunCode={handle_run_code}
+              onEditFile={handle_edit_file}
+              onExcuteFile={set_execute}
+              accessible={accessible}
+            />
             {is_execute && (
               <OutputConsole
                 folderStructure={folder_structure}
