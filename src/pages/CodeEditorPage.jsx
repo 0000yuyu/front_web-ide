@@ -99,7 +99,7 @@ export default function CodeEditorPage() {
   };
 
   const handle_add_folder = async (parent_id = null, folder_name) => {
-    console.log('실행');
+    console.log('폴더추가 실행 임시');
     const temp_id = generate_temp_id();
 
     const new_folder = {
@@ -118,7 +118,7 @@ export default function CodeEditorPage() {
 
   const handle_add_file = async (folder_id, file_name, language) => {
     const temp_id = generate_temp_id();
-    console.log('id' + temp_id);
+    console.log('파일 추가 실행 임시' + temp_id);
     const new_file = {
       team_id,
       quest_id,
@@ -169,7 +169,9 @@ export default function CodeEditorPage() {
   // 임시로 저장된거 서버로 전송해야 될 때 -> 완료 버튼 누르면
   const handleFolderSave = async (folder) => {
     try {
+      console.log('폴더 추가', folder);
       const { folder_id } = await addFolder(folder);
+
       for (const file of folder.files) {
         await handleFileSave({ ...file, folder_id: folder_id });
       }
@@ -180,7 +182,8 @@ export default function CodeEditorPage() {
     set_fetch_update(!fetch_update);
   };
   const handleFileSave = async (file) => {
-    console.log(file);
+    console.log('파일 추가', file);
+
     try {
       await addFile(file);
     } catch (error) {
