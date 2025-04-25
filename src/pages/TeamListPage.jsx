@@ -20,17 +20,23 @@ export default function TeamListPage() {
 
   // 티어가 바뀔 때마다 그룹 리스트 가져오기
   useEffect(() => {
+    // 팀 목록을 비동기적으로 가져오는 함수입니다.
     const fetchGroupListAsync = async () => {
       try {
-        const array = await getTeamList(tier); // 사용자의 티어에 맞는 팀 목록을 비동기적으로 가져옵니다.
-        setTeams(array); // 가져온 팀 목록을 상태에 업데이트합니다.
-        console.log(array); // 성공적으로 가져온 팀 목록을 콘솔에 로그로 출력합니다.
+        // 사용자의 티어에 맞는 팀 목록을 비동기적으로 가져옵니다.
+        const array = await getTeamList();
+        // 가져온 팀 목록을 상태에 업데이트합니다.
+        setTeams(array);
+        // 성공적으로 가져온 팀 목록을 콘솔에 로그로 출력합니다.
+        console.log(array);
       } catch (error) {
-        console.log(error); // 팀 목록을 가져오는 과정에서 발생한 오류를 콘솔에 로그로 출력합니다.
+        // 팀 목록을 가져오는 과정에서 발생한 오류를 콘솔에 로그로 출력합니다.
+        console.log(error);
       }
     };
+    // 함수를 호출하여 팀 목록을 가져옵니다.
     fetchGroupListAsync();
-  }, [tier]);
+  }, []);
 
   // 코드 설명: handleChange 함수는 input 요소의 변경을 감지하고, 해당 변경된 값을 form 상태에 업데이트합니다.
   const handleChange = (e) => {
@@ -182,11 +188,11 @@ export default function TeamListPage() {
   return (
     <>
       <div className="flex items-start justify-stretch bg-oklch(98.5% 0 0)">
-        <div className="flex-1 p-6 pt-0 min-h-screen justify-items-stretch">
+        <div className="mt-3 flex-1 p-6 pt-0 min-h-screen justify-items-stretch">
           <div>
             <button
               onClick={toggle}
-              className="bg-[#2D336B] text-white px-3 py-1 rounded text-sm"
+              className="bg-[#2D336B] text-white px-10 py-5 rounded text-xl"
             >
               팀 생성
             </button>
