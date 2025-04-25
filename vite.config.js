@@ -23,7 +23,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api/ws': {
-        target: 'ws://43.202.161.69:8080/ws/chat', // 웹소켓은 ws://
+        target: 'ws://43.202.161.69:8080', // 웹소켓은 ws://
         ws: true,
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),

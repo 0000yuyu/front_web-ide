@@ -8,36 +8,29 @@ import {
 } from '@/utils/chatManage';
 import { userDataStore } from '@/store/userDataStore';
 
-export default function ChatBox() {
+export default function ChatBox({ team_id }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
 
   const [keyword, setKeyword] = useState('');
   const [results, setResults] = useState([]);
 
-  const { teamId, nickname, userId } = userDataStore();
+  const { nickname } = userDataStore();
   const scrollRef = useRef(null);
 
   useEffect(() => {
-    if (!teamId) return;
+    if (!team_id) return;
 
     async function initChat() {
       try {
-        const history = await getChatHistory(teamId);
+        const history = await getChatHistory(team_id);
         const sorted = history.sort(
           (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
         );
         setMessages(sorted);
 
-        connectChatSocket(teamId, (msg) => {
+        connectChatSocket((msg) => {
           setMessages((prev) => [...prev, msg]);
-
-          // 스크롤 맨 아래로
-          setTimeout(() => {
-            if (scrollRef.current) {
-              scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-            }
-          }, 0);
         });
       } catch (err) {
         console.error('초기 채팅 로딩 실패:', err);
@@ -46,24 +39,31 @@ export default function ChatBox() {
 
     initChat();
     return () => disconnectChatSocket();
-  }, [teamId]);
+  }, [team_id]);
+
+  // 📌 메시지 바뀔 때마다 자동 스크롤
+  useEffect(() => {
+    if (!scrollRef.current) return;
+    requestAnimationFrame(() => {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    });
+  }, [messages]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!input.trim()) return;
 
     sendMessageToServer({
-      user_id: userId,
       nickname,
       content: input,
-      team_id: teamId,
+      team_id,
     });
     setInput('');
   };
 
   const handleSearch = async () => {
     if (!keyword.trim()) return;
-    const data = await searchCahtMessages(teamId, keyword);
+    const data = await searchCahtMessages(team_id, keyword);
     setResults(data);
   };
 
@@ -89,8 +89,9 @@ export default function ChatBox() {
 
       {results.length > 0 && (
         <div className='mt-2 text-sm bg-yellow-50 p-2 rounded max-h-40 overflow-y-auto border border-yellow-200'>
-          <p className='text-xs text-yellow-800 font-semibold mb-1'>
-            🔍 검색 결과
+          <p className='text-xs text-yellow-800 font-semibold mb-1 flex justify-between'>
+            <span>검색 결과</span>
+            <button onClick={() => setResults([])}>닫기</button>
           </p>
           {results.map((msg, i) => (
             <p key={i}>

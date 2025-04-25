@@ -1,9 +1,11 @@
+import { getHeaders } from './auth';
+
 let socket = null;
 // 연결 시작
-export const connectChatSocket = (token, onMessage) => {
+export const connectChatSocket = (onMessage) => {
   if (socket && socket.readyState === WebSocket.OPEN) return;
 
-  socket = new WebSocket(`/api/ws://ws/chat?token=${token}`);
+  socket = new WebSocket(`/api/ws/chat`);
 
   socket.onopen = () => {
     console.log('🟢 WebSocket 연결됨');
@@ -49,7 +51,12 @@ export const disconnectChatSocket = () => {
 export async function searchCahtMessages(teamId, keyword) {
   try {
     const res = await fetch(
-      `/api/chat/search?teamId=${teamId}&keyword=${encodeURIComponent(keyword)}`
+      `/api/api/chat/search?teamId=${teamId}&keyword=${encodeURIComponent(
+        keyword
+      )}`,
+      {
+        headers: getHeaders(),
+      }
     );
     if (!res.ok) throw new Error('search false');
 
@@ -62,9 +69,12 @@ export async function searchCahtMessages(teamId, keyword) {
 }
 
 //채팅 조회
-export async function getChatHistory(teamId) {
+export async function getChatHistory(team_id) {
   try {
-    const res = await fetch(`/api/chat/history?teamId=${teamId}`);
+    const res = await fetch(`/api/api/chat/history?teamId=${team_id}`, {
+      method: 'GET',
+      headers: getHeaders(),
+    });
     if (!res.ok) throw new Error('chatHistory false');
 
     const data = await res.json();

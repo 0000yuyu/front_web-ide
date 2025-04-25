@@ -7,11 +7,12 @@ import { Link } from 'react-router-dom';
 import { LuMenu } from 'react-icons/lu';
 import SideBar from './SideBar';
 import Modal from './Modal';
+import ChatBox from './ChatBox';
 
 export default function Header() {
   const isLogged = isLoggedIn();
   const [menuOpen, setMenuOpen] = useState(false);
-  const { userid, nickname, tier, email, resetUserProfile } = userDataStore();
+  const { resetUserProfile } = userDataStore();
 
   return (
     <div>

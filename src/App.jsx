@@ -28,7 +28,11 @@ export default function App() {
           index
           element={
             isLoggedIn() ? (
-              <Navigate to={`/team/${team_id}`} replace />
+              team_id ? (
+                <Navigate to={`/team/${team_id}`} replace />
+              ) : (
+                <Navigate to={'/teams'} replace />
+              )
             ) : (
               <IntroPage />
             )
@@ -39,7 +43,7 @@ export default function App() {
         <Route path='find-id' element={<FindIdPage />} />
         <Route path='find-password' element={<FindPasswordPage />} />
         <Route path='intro' element={<IntroPage />} />
-        <Route path='groups' element={<TeamListPage />} />
+        <Route path='teams' element={<TeamListPage />} />
         <Route path='team/:team_id' element={<TeamMainPage />} />
         <Route path='quest/:team_id/:quest_id' element={<QuestPage />} />
         <Route
