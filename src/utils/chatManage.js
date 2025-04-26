@@ -51,7 +51,7 @@ export const disconnectChatSocket = () => {
 export async function searchCahtMessages(teamId, keyword) {
   try {
     const res = await fetch(
-      `/api/api/chat/search?teamId=${teamId}&keyword=${encodeURIComponent(
+      `/api/chat/search?teamId=${teamId}&keyword=${encodeURIComponent(
         keyword
       )}`,
       {
@@ -71,7 +71,7 @@ export async function searchCahtMessages(teamId, keyword) {
 //채팅 조회
 export async function getChatHistory(team_id) {
   try {
-    const res = await fetch(`/api/api/chat/history?teamId=${team_id}`, {
+    const res = await fetch(`/api/chat/history?teamId=${team_id}`, {
       method: 'GET',
       headers: getHeaders(),
     });
