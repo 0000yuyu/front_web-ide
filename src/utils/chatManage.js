@@ -5,7 +5,7 @@ let socket = null;
 export const connectChatSocket = (onMessage) => {
   if (socket && socket.readyState === WebSocket.OPEN) return;
 
-  socket = new WebSocket(`ws://43.202.161.69:8080/ws/chat`);
+  socket = new WebSocket(`wss://43.202.161.69:8443/ws/chat`);
 
   socket.onopen = () => {
     console.log('🟢 WebSocket 연결됨');
