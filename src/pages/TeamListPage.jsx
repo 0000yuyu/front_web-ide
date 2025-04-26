@@ -62,6 +62,7 @@ export default function TeamListPage() {
     }
 
     try {
+      console.log(form);
       const success = await createTeam(form); // 팀 생성 시도
 
       if (success) {
@@ -132,6 +133,7 @@ export default function TeamListPage() {
     const navigate = useNavigate();
 
     async function handleJoin(team_id) {
+      console.log(team_id);
       const success = await joinTeam(team_id);
 
       if (success) {
