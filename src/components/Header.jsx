@@ -6,7 +6,6 @@ import { PiMedalMilitaryDuotone } from 'react-icons/pi';
 import { Link } from 'react-router-dom';
 import { LuMenu } from 'react-icons/lu';
 import SideBar from './SideBar';
-import Modal from './Modal';
 import ChatBox from './ChatBox';
 
 export default function Header() {
@@ -16,6 +15,7 @@ export default function Header() {
 
   return (
     <div>
+      <ChatBox team_id={32} />
       <header
         className='bg-base3 text-black px-6 
       py-4 flex justify-between items-center'
