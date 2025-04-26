@@ -5,7 +5,7 @@ let socket = null;
 export const connectChatSocket = (onMessage) => {
   if (socket && socket.readyState === WebSocket.OPEN) return;
 
-  socket = new WebSocket(`wss://43.202.161.69:8443/ws/chat`);
+  socket = new WebSocket(`wss://43.202.161.69:8443/wss/chat`);
 
   socket.onopen = () => {
     console.log('🟢 WebSocket 연결됨');
@@ -35,6 +35,7 @@ export const sendMessageToServer = (message) => {
     type: 'message',
     ...message,
   };
+  console.log(payload);
 
   socket.send(JSON.stringify(payload));
 };
@@ -51,7 +52,7 @@ export const disconnectChatSocket = () => {
 export async function searchCahtMessages(teamId, keyword) {
   try {
     const res = await fetch(
-      `/api/api/chat/search?teamId=${teamId}&keyword=${encodeURIComponent(
+      `/api/chat/search?teamId=${teamId}&keyword=${encodeURIComponent(
         keyword
       )}`,
       {
@@ -71,7 +72,7 @@ export async function searchCahtMessages(teamId, keyword) {
 //채팅 조회
 export async function getChatHistory(team_id) {
   try {
-    const res = await fetch(`/api/api/chat/history?teamId=${team_id}`, {
+    const res = await fetch(`/api/chat/history?teamId=${team_id}`, {
       method: 'GET',
       headers: getHeaders(),
     });
