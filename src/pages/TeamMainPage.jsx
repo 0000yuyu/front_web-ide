@@ -11,7 +11,6 @@ export default function TeamMainPage() {
   const [form, setForm] = useState({
     team_id: '',
     quest_name: '',
-    user_id: '',
     quest_start: '',
     quest_due: '',
     quest_link: '',
@@ -85,9 +84,7 @@ export default function TeamMainPage() {
     setForm((prev) => ({ ...prev, [name]: value })); // 폼 상태 업데이트
   };
 
-  async function handleCreateQuest(event) {
-    event.preventDefault(); // 폼 제출 방지
-
+  async function handleCreateQuest() {
     if (!form.quest_name) {
       alert('문제 번호를 입력해주세요'); // 문제 번호가 입력되지 않았을 경우 경고
       return;
@@ -106,11 +103,10 @@ export default function TeamMainPage() {
     try {
       const success = await createQuest(form); // 새로운 문제를 생성하는 함수 호출
       if (success) {
-        await fetchQuestList(); // 문제 목록을 새로 가져옴
+        await getQuestList(team_id); // 문제 목록을 새로 가져옴
         setForm({
           team_id: '',
           quest_name: '',
-          user_id: '',
           quest_start: '',
           quest_due: '',
           quest_link: '',
@@ -126,7 +122,7 @@ export default function TeamMainPage() {
   }
 
   //함수
-  function CreateQuestModal(form, handleChange, handleCreateQuest) {
+  const CreateQuestModal = ({ form, handleChange, handleCreateQuest }) => {
     const { toggle } = useModalStore();
     const Section = ({ title, children }) => (
       <div className='mb-6 p-4 border border-transparent3 rounded-lg bg-white'>
@@ -154,16 +150,26 @@ export default function TeamMainPage() {
       >
         <div onClick={(e) => e.stopPropagation()}>
           <Section title='문제 생성' id='createQuest'>
-            생성자:{' '}
-            <Input name='user_id' placeholder='생성자 이름' type='number' />
             문제명:
             <Input name='quest_name' placeholder='문제 이름' />
-            시작일:{' '}
-            <Input name='quest_start' placeholder='시작일 (YYYY-MM-DD)' />
-            마감일: <Input name='quest_due' placeholder='마감일 (YYYY-MM-DD)' />
+            시작일:
+            <Input
+              name='quest_start'
+              type='date'
+              placeholder='시작일 (YYYY-MM-DD)'
+            />
+            마감일:{' '}
+            <Input
+              name='quest_due'
+              type='date'
+              placeholder='마감일 (YYYY-MM-DD)'
+            />
             문제 링크: <Input name='quest_link' placeholder='문제 링크' />
             <button
-              onClick={handleCreateQuest}
+              onClick={() => {
+                console.log('버튼 클릭');
+                handleCreateQuest();
+              }}
               className='bg-base1 text-white px-4 py-1 rounded'
             >
               문제 생성
@@ -172,7 +178,7 @@ export default function TeamMainPage() {
         </div>
       </div>
     );
-  }
+  };
 
   function ProblemList({ quests }) {
     return (

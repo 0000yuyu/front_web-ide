@@ -15,7 +15,7 @@ export default function SideBar() {
   return (
     <div className='flex p-3 absolute w-full z-10 shadow-md bg-white gap-2 justify-between'>
       <div className='flex gap-2 items-center'>
-        <Link to='teams' className='hover:underline hover:text-base3'>
+        <Link to='/teams' className='hover:underline hover:text-base3'>
           그룹
         </Link>
         <Link to='/' className='hover:underline hover:text-base3'>

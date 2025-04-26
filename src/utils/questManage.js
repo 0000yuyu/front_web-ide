@@ -50,6 +50,7 @@ export async function updateQuestState(teamId, questId) {
 }
 // 새로운 퀘스트를 생성하는 비동기 함수
 export async function createQuest(form) {
+  console.log(form);
   const response = await fetch('/api/quest', {
     method: 'POST',
     headers: getHeaders(),
