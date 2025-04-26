@@ -141,7 +141,7 @@ export default function LoginPage() {
       if (success) {
         const userData = await getUserData();
         setUserProfile(userData);
-        window.location.reload('/');
+        navigate('/');
       } else {
         set_modal_open(true);
         newMessages.submit = {
