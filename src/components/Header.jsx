@@ -15,7 +15,6 @@ export default function Header() {
 
   return (
     <div>
-      <ChatBox team_id={32} />
       <header
         className='bg-base3 text-black px-6 
       py-4 flex justify-between items-center'

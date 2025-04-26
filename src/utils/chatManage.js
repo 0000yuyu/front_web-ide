@@ -35,6 +35,7 @@ export const sendMessageToServer = (message) => {
     type: 'message',
     ...message,
   };
+  console.log(payload);
 
   socket.send(JSON.stringify(payload));
 };
