@@ -2,6 +2,10 @@
   "version": 2,
   "rewrites": [
     {
+      "source": "/api/(.*)",
+      "destination": "http://43.202.161.69:8080/$1"
+    },
+    {
       "source": "/:path*",
       "destination": "/"
     }
