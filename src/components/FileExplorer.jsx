@@ -83,6 +83,7 @@ function FileExplorer({
       </div>
 
       <FolderTreeView
+        accessible={accessible}
         onFolderSave={onFolderSave}
         onFileSave={onFileSave}
         folderStructure={folderStructure}
@@ -106,10 +107,19 @@ function FileExplorer({
                     placeholder='새 파일 이름'
                     className='p-1 mr-2 bg-[#3B4048] text-[#ABB2BF] border border-[#383E4A] rounded text-sm'
                   />
-                  <button onClick={handleAddFileClick}>
+                  <button
+                    onClick={() => {
+                      if (accessible) handleAddFileClick();
+                      else alert('수정 권한이 없습니다.');
+                    }}
+                  >
                     <FaCheck />
                   </button>
-                  <button onClick={() => setAddFile(false)}>
+                  <button
+                    onClick={() => {
+                      setAddFile(false);
+                    }}
+                  >
                     <MdClose />
                   </button>
                 </div>

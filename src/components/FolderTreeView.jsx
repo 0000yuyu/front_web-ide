@@ -11,6 +11,7 @@ function FolderTreeView({
   onEditFile,
   onFolderSave,
   onFileSave,
+  accessible,
 }) {
   const [renderFolderStructure, setRenderFolderStructure] = useState([]);
 
@@ -125,7 +126,9 @@ function FolderTreeView({
     );
   };
 
-  return <>{renderFolderStructure.map((folder) => renderFolder(folder))}</>;
+  return (
+    <div>{renderFolderStructure.map((folder) => renderFolder(folder))}</div>
+  );
 }
 
 export default FolderTreeView;

@@ -36,10 +36,6 @@ export default function CodeEditorPage() {
   }, [fetch_update]);
 
   useEffect(() => {
-    console.log(folder_structure, pending_structures);
-  }, [folder_structure, pending_structures]);
-
-  useEffect(() => {
     const fetch_access = async () => {
       try {
         const accessible = await accessCode(team_id, quest_id, user_id);
@@ -49,7 +45,7 @@ export default function CodeEditorPage() {
       }
     };
     fetch_access();
-  });
+  }, [team_id, quest_id, user_id]);
 
   async function fetch_quest() {
     try {
@@ -253,8 +249,13 @@ export default function CodeEditorPage() {
 
   return (
     <div className='w-screen h-screen flex flex-col bg-code text-transparent2'>
-      <div className='flex justify-between p-2'>
-        <span className='text-xl'>문제 : {quest?.quest_name}</span>
+      <div className='flex items-end justify-between p-2'>
+        <div className='flex gap-3 items-center'>
+          <span className='text-xl'>문제 : {quest?.quest_name}</span>
+          <span className='border rounded-md p-1 px-5 bg-transparent3 bg-opacity-[0.3]'>
+            {accessible ? '내 코드' : '다른 사람의 코드'}
+          </span>
+        </div>
         <button
           className='bg-transparent1 p-2 rounded-lg text-white'
           onClick={handleAllSave}

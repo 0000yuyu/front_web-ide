@@ -1,183 +1,198 @@
-import React, { useEffect, useState } from "react";
-import { useModalStore } from "./TeamStore"; // 모달 상태 관리를 위한 훅
-import { userDataStore } from "@/store/userDataStore"; // 사용자 데이터 저장소
-import { Link, useNavigate } from "react-router-dom"; // 라우터 링크 컴포넌트
-import { createTeam, getTeamList, joinTeam } from "@/utils/teamManage"; // 팀 관리 함수
-import { checkIdDuplicate } from "@/utils/userManage";
+import React, { useEffect, useState } from 'react';
+import { useModalStore } from './TeamStore'; // 모달 상태 관리를 위한 훅
+import { userDataStore } from '@/store/userDataStore'; // 사용자 데이터 저장소
+import { Link } from 'react-router-dom'; // 라우터 링크 컴포넌트
+import { createTeam, getTeamList, joinTeam } from '@/utils/teamManage'; // 팀 관리 함수
+import Modal from '@/components/Modal';
+import { getUserData } from '@/utils/userManage';
 
+function Input({
+  id,
+  label,
+  type = 'text',
+  placeholder,
+  value,
+  onChange,
+  inputRef,
+  message,
+  name,
+  isTextArea = false, // textArea 여부를 위한 prop 추가
+}) {
+  return (
+    <div className='flex gap-4 mb-4'>
+      {label && (
+        <label className='text-sm font-bold' htmlFor={id}>
+          {label}
+        </label>
+      )}
+      <div className='relative'>
+        {isTextArea ? (
+          <textarea
+            ref={inputRef}
+            className={`shadow appearance-none border ${
+              message?.type == 'error' && 'border-error'
+            } rounded p-[5px] px-12 h-[100px] leading-tight focus:outline-none focus:shadow-outline`}
+            id={id}
+            placeholder={placeholder}
+            value={value}
+            onChange={onChange}
+            name={name}
+          />
+        ) : (
+          <input
+            ref={inputRef}
+            className={`shadow appearance-none border ${
+              message?.type == 'error' && 'border-error'
+            } rounded p-[5px] px-10 leading-tight focus:outline-none focus:shadow-outline`}
+            id={id}
+            type={type}
+            placeholder={placeholder}
+            value={value}
+            onChange={onChange}
+            name={name}
+          />
+        )}
+        {message && (
+          <span
+            className={`${
+              message?.type == 'error' ? 'text-error' : 'text-green-500'
+            } text-sm mt-1 absolute border-error left-0 bottom-[-20px]`}
+          >
+            {message.text}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
 export default function TeamListPage() {
-  const { isOpen, toggle } = useModalStore(); // 모달 상태와 토글 함수
-  const { tier } = userDataStore(); // 사용자 티어 정보
+  const [is_open, set_open] = useState(false);
+  const [modal_content, set_modal_content] = useState({});
+  const { tier, team_id, setUserProfile } = userDataStore(); // 사용자 티어 정보
 
   const [form, setForm] = useState({
-    team_name: "",
-    team_description: "",
+    team_name: '',
+    team_description: '',
     team_tier: tier,
-    max_member: "",
+    max_member: '',
   }); // 팀 생성 폼 상태
+
+  const [messages, setMessages] = useState({
+    team_name: '',
+    max_member: '',
+    team_description: '',
+  }); // 각 입력 필드의 오류 메시지 상태
 
   const [teams, setTeams] = useState([]); // 팀 목록 상태
 
-  // 티어가 바뀔 때마다 그룹 리스트 가져오기
   useEffect(() => {
-    // 팀 목록을 비동기적으로 가져오는 함수입니다.
     const fetchGroupListAsync = async () => {
       try {
-        // 사용자의 티어에 맞는 팀 목록을 비동기적으로 가져옵니다.
         const array = await getTeamList();
-        // 가져온 팀 목록을 상태에 업데이트합니다.
         setTeams(array);
-        // 성공적으로 가져온 팀 목록을 콘솔에 로그로 출력합니다.
-        console.log(array);
       } catch (error) {
-        // 팀 목록을 가져오는 과정에서 발생한 오류를 콘솔에 로그로 출력합니다.
         console.log(error);
       }
     };
-    // 함수를 호출하여 팀 목록을 가져옵니다.
     fetchGroupListAsync();
   }, []);
 
-  // 코드 설명: handleChange 함수는 input 요소의 변경을 감지하고, 해당 변경된 값을 form 상태에 업데이트합니다.
+  // handleChange: 입력 필드 값 업데이트 및 오류 메시지 초기화
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+    setMessages((prev) => ({ ...prev, [name]: null }));
   };
 
+  // 팀 생성 처리
   async function handleCreateTeam(event) {
-    event.preventDefault(); // 폼 제출 방지
+    event.preventDefault();
+    let formErrors = {};
 
-    // 데이터 유효성 검사
-    if (!form.team_name) {
-      alert("팀 이름을 입력해주세요");
-      return;
-    }
-    if (!form.max_member) {
-      alert("팀원수를 선택해주세요");
-      return;
-    }
-    if (!form.team_description) {
-      alert("팀 설명을 입력해주세요");
+    if (!form.team_name) formErrors.team_name = '팀 이름을 입력해주세요.';
+    if (!form.max_member) formErrors.max_member = '팀원 수를 입력해주세요.';
+    if (!form.team_description)
+      formErrors.team_description = '팀 설명을 입력해주세요.';
+
+    if (Object.keys(formErrors).length > 0) {
+      setMessages(formErrors);
       return;
     }
 
     try {
-      console.log(form);
-      const success = await createTeam(form); // 팀 생성 시도
-
+      const success = await createTeam(form);
       if (success) {
-        await getTeamList(tier); // 성공 시 팀 목록 새로고침
-
+        await getTeamList(tier);
         setForm({
-          team_name: "",
-          team_description: "",
-          team_tier: "",
-          max_member: "",
+          team_name: '',
+          team_description: '',
+          team_tier: '',
+          max_member: '',
+        });
+        set_open(false);
+        set_modal_content({
+          type: 'success',
+          message: '팀이 성공적으로 생성되었습니다!',
         });
       } else {
-        throw new Error("팀 생성 실패");
+        throw new Error('팀 생성 실패');
       }
-      toggle(); // 모달 닫기
     } catch (error) {
-      alert(error.message); // 오류 메시지 알림
+      set_modal_content({ type: 'error', message: '팀 생성에 실패했습니다.' });
     }
   }
 
-  ///
-
-  function CreateTeamModal({ form, handleChange, handleCreateTeam }) {
-    const { toggle } = useModalStore();
-    const Section = ({ title, children }) => (
-      <div className="mb-6 p-4 border border-transparent3 rounded-lg bg-white">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="text-base1 font-semibold">{title}</h3>
-        </div>
-        <div>{children}</div>
-      </div>
-    );
-    const Input = ({ name, placeholder, type = "text" }) => (
-      <input
-        className="block w-full px-3 py-2 mb-2 border border-transparent3 rounded bg-white text-transparent3"
-        name={name}
-        value={form[name]}
-        onChange={handleChange}
-        placeholder={placeholder}
-        type={type}
-      />
-    );
-
-    return (
-      <div
-        className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-        onClick={toggle}
-      >
-        <div onClick={(e) => e.stopPropagation()}>
-          <Section title="팀 생성">
-            팀이름: <Input name="team_name" placeholder="팀 이름" />
-            팀원 수:
-            <Input name="max_member" placeholder="팀원 수" type="number" />
-            팀 설명: <Input name="team_description" placeholder="팀 설명" />
-            <button
-              className="bg-base1 text-white px-4 py-1 rounded"
-              onClick={handleCreateTeam}
-            >
-              팀 생성
-            </button>
-          </Section>
-        </div>
-      </div>
-    );
-  }
-
+  // 팀 목록
   function TeamList({ teams }) {
-    const navigate = useNavigate();
-
-    async function handleJoin(team_id) {
-      console.log(team_id);
-      const success = await joinTeam(team_id);
-
-      if (success) {
-        alert("팀에 참여했습니다!");
-        navigate(`/team/${team_id}`);
-      } else {
-        alert("팀 참여에 실패했습니다.");
-      }
-    }
-
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 px-4">
+      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 px-4'>
         {teams.map((team) => (
           <div
             key={team.team_name}
-            className="rounded-xl shadow-md bg-white p-4 flex flex-col justify-between"
+            className='rounded-xl shadow-md bg-white p-4 flex flex-col justify-between'
           >
-            <h3 className="items-right text-lg font-semibold mb-2">
+            <h3 className='items-right text-lg font-semibold mb-2'>
               {team.team_name}
             </h3>
-            <p className="text-sm mb-1">문제 수 : {team.team_quest ?? 0}개</p>
-            <p className="text-sm mb-1">
+            <p className='text-sm mb-1'>문제 수 : {team.team_quest ?? 0}개</p>
+            <p className='text-sm mb-1'>
               인원 : {team.currnet_member_count}/{team.max_member}
             </p>
-            <p className="text-sm mb-3">등급: {team.tier}</p>
+            <p className='text-sm mb-3'>등급: {team.tier}</p>
 
-            {team.is_join ? (
+            {team.team_id === team_id ? (
               <Link
                 to={`/team/${team.team_id}`}
-                className="bg-base2 text-white py-1 px-4 rounded text-center block"
+                className='bg-base2 text-white py-1 px-4 rounded text-center block'
               >
                 이동
               </Link>
             ) : team.max_member <= team.currnet_member_count ? (
               <button
                 disabled
-                className="bg-base1 text-white py-1 px-4 rounded opacity-50 cursor-not-allowed"
+                className='bg-base1 text-white py-1 px-4 rounded opacity-50 cursor-not-allowed'
               >
                 마감
               </button>
             ) : (
               <button
-                onClick={() => handleJoin(team.team_id)}
-                className="bg-base1 text-white py-1 px-4 rounded text-center block hover:bg-base2 transition"
+                onClick={() => {
+                  if (!team_id) {
+                    set_open(true);
+                    set_modal_content({
+                      type: 'join_team',
+                      title: team.team_name,
+                      team_id: team.team_id,
+                    });
+                  } else {
+                    set_open(true);
+                    set_modal_content({
+                      type: 'error',
+                      message: '하나의 팀에만 가입 가능합니다.',
+                    });
+                  }
+                }}
+                className='bg-base1 text-white py-1 px-4 rounded text-center block hover:bg-base2 transition'
               >
                 참여
               </button>
@@ -187,27 +202,130 @@ export default function TeamListPage() {
       </div>
     );
   }
+
   return (
     <>
-      <div className="flex items-start justify-stretch bg-oklch(98.5% 0 0)">
-        <div className="mt-3 flex-1 p-6 pt-0 min-h-screen justify-items-stretch">
-          <div>
-            <button
-              onClick={toggle}
-              className="bg-[#2D336B] text-white px-10 py-5 rounded text-xl"
-            >
-              팀 생성
-            </button>
+      <div className='flex items-start justify-stretch bg-oklch(98.5% 0 0)'>
+        <div className='mt-3 flex-1 p-6 pt-0 min-h-screen justify-items-stretch'>
+          <button
+            onClick={() => {
+              set_open(true);
+              set_modal_content({ type: 'create_team' });
+            }}
+            className='bg-[#2D336B] text-white px-10 py-5 rounded text-xl'
+          >
+            팀 생성
+          </button>
 
-            {isOpen && (
-              <CreateTeamModal
-                form={form}
-                handleChange={handleChange}
-                handleCreateTeam={handleCreateTeam}
-              />
-            )}
-            <TeamList teams={teams} />
-          </div>
+          {is_open && modal_content.type === 'create_team' && (
+            <Modal title='팀 생성' onClose={() => set_open(false)}>
+              <form onSubmit={handleCreateTeam} className='flex flex-col gap-5'>
+                <Input
+                  id='team_name'
+                  name='team_name'
+                  label='팀 이름'
+                  type='text'
+                  placeholder='팀 이름을 입력하세요'
+                  value={form.team_name}
+                  message={
+                    messages.team_name && {
+                      type: 'error',
+                      text: messages.team_name,
+                    }
+                  }
+                  onChange={handleChange}
+                />
+                <Input
+                  id='max_member'
+                  label='팀원 수'
+                  type='number'
+                  placeholder='팀원 수를 입력하세요'
+                  value={form.max_member}
+                  name='max_member'
+                  message={
+                    messages.max_member && {
+                      type: 'error',
+                      text: messages.max_member,
+                    }
+                  }
+                  onChange={handleChange}
+                />
+                <Input
+                  isTextArea={true}
+                  id='team_description'
+                  name='team_description'
+                  label='팀 설명'
+                  type='text'
+                  placeholder='팀 설명을 입력하세요'
+                  value={form.team_description}
+                  message={
+                    messages.team_description && {
+                      type: 'error',
+                      text: messages.team_description,
+                    }
+                  }
+                  onChange={handleChange}
+                />
+                <div className='flex gap-3'>
+                  <button
+                    type='submit'
+                    className='w-full bg-base1 text-white py-2 rounded'
+                  >
+                    팀 생성
+                  </button>
+                  <button
+                    className='w-full bg-transparent2 rounded'
+                    onClick={() => set_open(false)}
+                  >
+                    취소
+                  </button>
+                </div>
+              </form>
+            </Modal>
+          )}
+
+          {is_open && modal_content.type === 'join_team' && (
+            <Modal title='팀 가입 요청' onClose={() => set_open(false)}>
+              <span>
+                <strong>팀 {modal_content.title}</strong>에 가입하시겠습니까?
+              </span>
+              <button
+                className='w-full bg-base1 text-white p-2 rounded'
+                onClick={async () => {
+                  const success = await joinTeam(modal_content.team_id);
+                  if (success) {
+                    const userData = await getUserData();
+                    setUserProfile(userData);
+                    set_modal_content({
+                      type: 'success',
+                      message: '팀에 성공적으로 가입되었습니다.',
+                    });
+                  } else {
+                    set_modal_content({
+                      type: 'error',
+                      message: '팀 가입에 실패했습니다.',
+                    });
+                  }
+                }}
+              >
+                가입
+              </button>
+            </Modal>
+          )}
+
+          {is_open && modal_content.type === 'success' && (
+            <Modal title='성공' onClose={() => set_open(false)}>
+              <p>{modal_content.message}</p>
+            </Modal>
+          )}
+
+          {is_open && modal_content.type === 'error' && (
+            <Modal title='오류' onClose={() => set_open(false)}>
+              <p>{modal_content.message}</p>
+            </Modal>
+          )}
+
+          <TeamList teams={teams} />
         </div>
       </div>
     </>
