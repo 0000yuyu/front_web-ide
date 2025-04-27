@@ -85,7 +85,8 @@ function CodeEditor({
             <button
               onClick={() => {
                 console.log(selectedFile);
-                onEditFile();
+                console.log(language);
+                onEditFile({ language });
               }}
               className='bg-transparent2 text-black rounded p-2 text-sm'
             >

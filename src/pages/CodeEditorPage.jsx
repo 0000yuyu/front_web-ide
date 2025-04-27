@@ -217,13 +217,6 @@ export default function CodeEditorPage() {
       return;
     }
     if (!selected_file) return;
-    //  경로명에 없는 경우 추가
-    if (language === 'java' && !file_name.endsWith('.java')) {
-      file_name = file_name + '.java';
-    }
-    if (language === 'python3' && !file_name.endsWith('.py')) {
-      file_name = file_name + '.py';
-    }
     if (edit_ref.current) {
       code_context = edit_ref.current.getValue();
       language = getCustomLanguageId();

@@ -106,12 +106,7 @@ export default function QuestPage() {
                 <span className='w-24 font-semibold text-gray-800'>
                   이동하기
                 </span>
-                <input
-                  type='text'
-                  value={quest.quest_link ?? ''}
-                  readOnly
-                  className='ml-4 border border-gray-300 rounded-lg px-3 py-1 text-sm text-gray-700 w-full max-w-xs'
-                />
+                <a href={`https://${quest.quest_link}`}>{quest.quest_link}</a>
               </div>
             </div>
           </div>
